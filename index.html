@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- MANDATORY: Declare support for both light and dark themes to prevent FOUC -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Quiet Spot — Discover peaceful study spots, serene library corners, calm parks, and distraction-free sanctuaries with ambient soundscapes and focus tools.">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7f6">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121816">
+
+  <title>Quiet Spot — Serene Spaces & Focus Sanctuary</title>
+  
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <!-- Header & Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="#" class="brand-logo" aria-label="Quiet Spot Home">
+        <svg class="logo-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2" opacity="0.3" />
+          <path d="M16 6C11.5817 6 8 9.58172 8 14C8 19.5 16 26 16 26C16 26 24 19.5 24 14C24 9.58172 20.4183 6 16 6Z" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="16" cy="13" r="2.5" fill="currentColor" />
+          <path d="M12 24C10 24 7 26 6 28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M20 24C22 24 25 26 26 28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <span class="brand-text">Quiet Spot</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main Navigation">
+        <ul class="nav-list">
+          <li><a href="#directory" class="nav-link active">Find Spots</a></li>
+          <li><a href="#sanctuary" class="nav-link">Sound Sanctuary</a></li>
+          <li><a href="#guide" class="nav-link">Noise Guide</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Theme toggle button -->
+        <button type="button" id="themeToggleBtn" class="icon-btn" aria-label="Switch color theme" title="Toggle theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <button type="button" id="openAddSpotBtn" class="btn btn-primary" aria-haspopup="dialog">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+          </svg>
+          <span>Share Spot</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- Hero / Welcome Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          <span>Curated quiet sanctuaries near you</span>
+        </div>
+        <h1 class="hero-title">Step away from the noise.</h1>
+        <p class="hero-subtitle">
+          Discover tranquil libraries, silent garden nooks, whisper-only study hubs, and serene spaces designed for deep concentration and mindful resting.
+        </p>
+
+        <!-- Search and Filter Bar -->
+        <div class="search-container" role="search">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+            <input 
+              type="search" 
+              id="searchInput" 
+              placeholder="Search by name, neighborhood, or tags (e.g., 'courtyard', 'wifi', 'plants')..." 
+              aria-label="Search quiet spots"
+              autocomplete="off"
+            >
+            <button type="button" id="clearSearchBtn" class="clear-btn" aria-label="Clear search query" hidden>
+              &times;
+            </button>
+          </div>
+
+          <div class="noise-filter-wrapper">
+            <label for="noiseLevelSelect" class="sr-only">Max noise level</label>
+            <select id="noiseLevelSelect" class="filter-select" aria-label="Filter by maximum noise level">
+              <option value="all">Any Sound Level</option>
+              <option value="30">&le; 30 dB (Whisper Silent)</option>
+              <option value="40">&le; 40 dB (Library Calm)</option>
+              <option value="50">&le; 50 dB (Gentle Hum)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="category-filters" role="group" aria-label="Category filters">
+          <button type="button" class="filter-pill active" data-category="all">All Spots</button>
+          <button type="button" class="filter-pill" data-category="library">Libraries</button>
+          <button type="button" class="filter-pill" data-category="cafe">Calm Cafes</button>
+          <button type="button" class="filter-pill" data-category="garden">Gardens &amp; Parks</button>
+          <button type="button" class="filter-pill" data-category="pod">Silent Pods</button>
+          <button type="button" class="filter-pill" data-category="bookstore">Bookstores</button>
+          <button type="button" class="filter-pill" data-category="saved">Saved Spots (<span id="savedCount">0</span>)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Grid: Directory & Sound Sanctuary -->
+    <div class="app-layout">
+      <!-- Left Column: Spot Directory -->
+      <section id="directory" class="spots-section" aria-labelledby="directoryHeading">
+        <div class="section-header">
+          <div>
+            <h2 id="directoryHeading" class="section-title">Verified Quiet Spots</h2>
+            <p class="section-desc">Rated for acoustic calm, seating comfort, and natural ambiance</p>
+          </div>
+          <span id="spotsCountBadge" class="results-badge" aria-live="polite">Showing 6 spots</span>
+        </div>
+
+        <div id="spotsGrid" class="spots-grid" aria-live="polite">
+          <!-- Populated dynamically via app.js -->
+        </div>
+
+        <div id="emptyState" class="empty-state" hidden>
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M8 12h8"></path>
+          </svg>
+          <h3>No quiet spots match your filter</h3>
+          <p>Try searching for a different neighborhood, relaxing your noise limit, or add a new quiet spot you've discovered.</p>
+          <button type="button" id="resetFiltersBtn" class="btn btn-secondary">Reset Filters</button>
+        </div>
+      </section>
+
+      <!-- Right Column: Interactive Sound Sanctuary & Focus Timer -->
+      <aside id="sanctuary" class="sanctuary-aside" aria-labelledby="sanctuaryHeading">
+        <div class="sanctuary-card">
+          <div class="sanctuary-header">
+            <h2 id="sanctuaryHeading" class="sanctuary-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sanctuary-icon" aria-hidden="true">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+              </svg>
+              Sound Sanctuary
+            </h2>
+            <span class="status-indicator" id="audioEngineStatus">Web Audio Ready</span>
+          </div>
+          <p class="sanctuary-subtitle">Mask harsh distractions with real-time synthesized acoustic generators.</p>
+
+          <!-- Ambient Sound Generators -->
+          <div class="sound-generators">
+            <div class="sound-row" data-sound="rain">
+              <button type="button" class="sound-toggle-btn" aria-pressed="false" id="rainToggle">
+                <span class="sound-icon-symbol" aria-hidden="true">🌧️</span>
+                <span class="sound-label">Gentle Rain</span>
+              </button>
+              <input type="range" class="sound-slider" id="rainVolume" min="0" max="100" value="40" aria-label="Rain volume">
+            </div>
+
+            <div class="sound-row" data-sound="pink">
+              <button type="button" class="sound-toggle-btn" aria-pressed="false" id="pinkToggle">
+                <span class="sound-icon-symbol" aria-hidden="true">〰️</span>
+                <span class="sound-label">Pink Noise</span>
+              </button>
+              <input type="range" class="sound-slider" id="pinkVolume" min="0" max="100" value="35" aria-label="Pink noise volume">
+            </div>
+
+            <div class="sound-row" data-sound="breeze">
+              <button type="button" class="sound-toggle-btn" aria-pressed="false" id="breezeToggle">
+                <span class="sound-icon-symbol" aria-hidden="true">🍃</span>
+                <span class="sound-label">Forest Breeze</span>
+              </button>
+              <input type="range" class="sound-slider" id="breezeVolume" min="0" max="100" value="40" aria-label="Breeze volume">
+            </div>
+
+            <div class="sound-row" data-sound="drone">
+              <button type="button" class="sound-toggle-btn" aria-pressed="false" id="droneToggle">
+                <span class="sound-icon-symbol" aria-hidden="true">🧘</span>
+                <span class="sound-label">Calm Drone (432Hz)</span>
+              </button>
+              <input type="range" class="sound-slider" id="droneVolume" min="0" max="100" value="30" aria-label="Drone volume">
+            </div>
+          </div>
+
+          <div class="master-volume-box">
+            <div class="master-vol-header">
+              <label for="masterVolumeSlider" class="master-vol-label">Master Ambience Level</label>
+              <span id="masterVolVal" class="master-vol-value">70%</span>
+            </div>
+            <input type="range" id="masterVolumeSlider" min="0" max="100" value="70" class="sound-slider">
+          </div>
+
+          <hr class="card-divider">
+
+          <!-- Focus Sprint Timer -->
+          <div class="focus-timer-container">
+            <h3 class="timer-title">Focus Sprint Timer</h3>
+            <div class="timer-display" id="timerClock" role="timer" aria-live="polite">25:00</div>
+            
+            <div class="timer-mode-selector">
+              <button type="button" class="timer-pill active" data-minutes="25">25m Focus</button>
+              <button type="button" class="timer-pill" data-minutes="50">50m Deep</button>
+              <button type="button" class="timer-pill" data-minutes="5">5m Rest</button>
+            </div>
+
+            <div class="timer-controls">
+              <button type="button" id="timerPlayBtn" class="btn btn-primary btn-timer">
+                <span id="timerPlayIcon" aria-hidden="true">▶</span>
+                <span id="timerPlayText">Start Focus</span>
+              </button>
+              <button type="button" id="timerResetBtn" class="btn btn-secondary btn-timer" title="Reset timer">
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Acoustic Guide Reference -->
+    <section id="guide" class="guide-section" aria-labelledby="guideHeading">
+      <div class="guide-card">
+        <h2 id="guideHeading" class="guide-title">Understanding The Quiet Spectrum</h2>
+        <p class="guide-subtitle">How sound pressure decibels (dB) affect cognitive calm and focus state:</p>
+        
+        <div class="decibel-grid">
+          <div class="decibel-item whisper">
+            <div class="db-number">20 &ndash; 30 dB</div>
+            <h3 class="db-title">Whisper Solitude</h3>
+            <p>Archive reading rooms, quiet monasteries, secluded garden nooks. Ideal for intense analytical thought and meditation.</p>
+          </div>
+          <div class="decibel-item library">
+            <div class="db-number">30 &ndash; 42 dB</div>
+            <h3 class="db-title">Library Calm</h3>
+            <p>Soft page turns, muffled footsteps, soft ambient hum. Perfect for long reading sessions and uninterrupted writing.</p>
+          </div>
+          <div class="decibel-item cafe">
+            <div class="db-number">42 &ndash; 52 dB</div>
+            <h3 class="db-title">Gentle Atmosphere</h3>
+            <p>Low coffeehouse murmurs, soft acoustic background notes. Great for casual creative drafting, coding, and sketching.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Dialog for Submitting a New Spot -->
+  <!-- MANDATORY: closedby="any" per modern guidance for declarative light-dismiss and ESC dismissal -->
+  <dialog id="addSpotModal" closedby="any" aria-labelledby="modalTitle">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 id="modalTitle" class="dialog-title">Recommend a Quiet Spot</h2>
+        <button type="button" class="dialog-close-btn" id="closeModalBtn" aria-label="Close dialog">&times;</button>
+      </div>
+      <p class="dialog-desc">Share a peaceful place where thinkers, readers, and creatives can find serenity.</p>
+
+      <form id="addSpotForm" method="dialog" class="spot-form">
+        <div class="form-group">
+          <label for="spotName">Spot Name <span class="required">*</span></label>
+          <input type="text" id="spotName" name="name" required placeholder="e.g. Saint Jude Cloister Garden" autofocus>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="spotCategory">Category <span class="required">*</span></label>
+            <select id="spotCategory" name="category" required>
+              <option value="library">Library &amp; Study Room</option>
+              <option value="cafe">Calm Cafe / Tea House</option>
+              <option value="garden">Garden / Park Sanctuary</option>
+              <option value="pod">Soundproof Co-working Pod</option>
+              <option value="bookstore">Bookstore Nook</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="spotNoise">Noise Level: <strong id="noiseDisplayVal">32 dB</strong></label>
+            <input type="range" id="spotNoise" name="noise" min="20" max="55" value="32" class="form-range">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="spotLocation">Location / Neighborhood <span class="required">*</span></label>
+          <input type="text" id="spotLocation" name="location" required placeholder="e.g. 42 Elmwood Ave, West Quarter">
+        </div>
+
+        <div class="form-group">
+          <label>Amenities Available</label>
+          <div class="amenities-checkbox-grid">
+            <label class="checkbox-label">
+              <input type="checkbox" name="amenity" value="Wi-Fi"> High-speed Wi-Fi
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="amenity" value="Power Outlets" checked> Power Outlets
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="amenity" value="Natural Light" checked> Natural Daylight
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="amenity" value="Tea / Coffee"> Tea / Coffee
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="amenity" value="Silence Policy" checked> Strict Quiet Policy
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="amenity" value="Outdoor Seating"> Outdoor Seating
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="spotDescription">Description &amp; Tips</label>
+          <textarea id="spotDescription" name="description" rows="3" placeholder="What makes this spot special? Best hours to visit, seating comfort, views..."></textarea>
+        </div>
+
+        <div class="dialog-actions">
+          <button type="button" id="cancelModalBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" value="submit" class="btn btn-primary">Add Quiet Spot</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Live Toast Notification -->
+  <div id="toastNotification" class="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="brand-inline">
+          <span class="brand-text">Quiet Spot</span>
+          <span class="brand-tagline">&mdash; The Sanctuary for Deep Focus</span>
+        </div>
+        <p class="footer-copy">Crafted with modern HTML, responsive CSS, and native Web Audio synthesis. Free from trackers and distractions.</p>
+      </div>
+
+      <div class="footer-meta">
+        <p>&copy; 2026 Quiet Spot. Preserving quietude across cities worldwide.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
+
