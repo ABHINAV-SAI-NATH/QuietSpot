@@ -1,0 +1,1579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiet Spot</title>
+<meta name="description" content="Find quiet places to read, study and think. Includes ambient sounds, a focus timer and a simple noise meter.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efebe4">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Quiet Spot">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23dfe5da'/%3E%3Cpath d='M8 20h3l3-8 4 12 3-8h3' fill='none' stroke='%23586a52' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem('qs.theme');
+    if (!t) t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dim' : 'light';
+    document.documentElement.setAttribute('data-theme', JSON.parse(JSON.stringify(t)).replace(/"/g, ''));
+  } catch (e) { document.documentElement.setAttribute('data-theme', 'light'); }
+})();
+</script>
+<style>
+:root {
+  --bg: #efebe4;
+  --surface: #f6f3ee;
+  --sunk: #e8e4dc;
+  --line: #d6d1c6;
+  --text: #3a3935;
+  --muted: #6b675f;
+  --accent: #586a52;
+  --accent-soft: #dfe5da;
+  --mark: #c9d3c2;
+  --warn: #8a6a4a;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+:root[data-theme="dim"] {
+  --bg: #2b2d2b;
+  --surface: #313431;
+  --sunk: #272927;
+  --line: #444843;
+  --text: #dad7d0;
+  --muted: #a3a097;
+  --accent: #b2c1a8;
+  --accent-soft: #3a4238;
+  --mark: #566052;
+  --warn: #c4a584;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
+a { color: var(--accent); text-underline-offset: 3px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 22px; }
+
+/* header */
+.top { border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; z-index: 20; }
+.top .wrap { display: flex; align-items: center; gap: 22px; height: 58px; }
+.brand { font-family: var(--serif); font-size: 21px; letter-spacing: .01em; color: var(--text); text-decoration: none; margin-right: auto; }
+.brand span { color: var(--accent); }
+.top nav { display: flex; gap: 20px; }
+.top nav a { color: var(--muted); text-decoration: none; font-size: 15px; padding: 4px 0; border-bottom: 1px solid transparent; }
+.top nav a:hover { color: var(--text); border-bottom-color: var(--line); }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 7px 14px; border-radius: 3px; font-size: 14.5px; }
+.btn:hover { background: var(--sunk); }
+.btn.main { background: var(--accent-soft); border-color: var(--mark); }
+.btn.main:hover { background: var(--mark); }
+.btn.small { padding: 4px 10px; font-size: 13.5px; }
+.btn[disabled] { opacity: .5; cursor: default; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+/* hero */
+.hero { padding: 64px 0 34px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: end; }
+.kicker { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5.2vw, 54px); line-height: 1.1; margin: 0 0 18px; letter-spacing: -.01em; }
+.hero p.lead { margin: 0; max-width: 46ch; color: var(--muted); font-size: 17px; }
+.hero aside { border-left: 1px solid var(--line); padding-left: 24px; font-size: 14.5px; color: var(--muted); }
+.hero aside b { display: block; font-family: var(--serif); font-weight: 400; font-size: 30px; color: var(--text); line-height: 1.1; }
+.hero aside div + div { margin-top: 14px; }
+
+/* sections */
+section { padding: 40px 0; border-top: 1px solid var(--line); }
+.sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 22px; flex-wrap: wrap; }
+.sec-head .no { font-family: var(--serif); color: var(--muted); font-size: 15px; }
+h2 { font-family: var(--serif); font-weight: 400; font-size: 29px; margin: 0; line-height: 1.2; }
+.sec-head p { margin: 0; color: var(--muted); flex-basis: 100%; max-width: 60ch; font-size: 15.5px; }
+h3 { font-family: var(--serif); font-weight: 400; font-size: 21px; margin: 0; line-height: 1.25; }
+
+/* filters */
+.filters { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; margin-bottom: 14px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.field input[type=text], .field input[type=search], .field input[type=number], .field select, .field textarea {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 3px; padding: 8px 10px; font-size: 15.5px; color: var(--text); width: 100%;
+}
+.field textarea { resize: vertical; min-height: 84px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px 22px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+.tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 0; margin-bottom: -1px; color: var(--muted); font-size: 15px; }
+.tabs button:hover { color: var(--text); }
+.tabs button[aria-pressed="true"] { color: var(--text); border-bottom-color: var(--accent); }
+.listbar { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--muted); padding: 10px 0; flex-wrap: wrap; gap: 8px; }
+.listbar select { border: 1px solid var(--line); background: var(--surface); padding: 3px 6px; border-radius: 3px; font-size: 14px; }
+
+/* spot list */
+ul.spots { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.spot { display: grid; grid-template-columns: 1fr 150px auto; gap: 22px; padding: 20px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.spot h3 button { background: none; border: 0; padding: 0; text-align: left; font: inherit; color: var(--text); }
+.spot h3 button:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+.meta { margin: 3px 0 8px; font-size: 14px; color: var(--muted); }
+.blurb { margin: 0 0 8px; font-size: 15.5px; max-width: 58ch; }
+.amen { margin: 0; font-size: 13.5px; color: var(--muted); }
+.tag { display: inline-block; font-size: 12px; color: var(--muted); border: 1px solid var(--line); padding: 0 6px; border-radius: 3px; margin-left: 8px; vertical-align: 2px; }
+.db .num { font-family: var(--serif); font-size: 34px; line-height: 1; }
+.db .unit { font-size: 13px; color: var(--muted); margin-left: 4px; }
+.db .bar { display: block; height: 4px; background: var(--sunk); margin: 8px 0 6px; border-radius: 2px; overflow: hidden; }
+.db .bar i { display: block; height: 100%; background: var(--accent); opacity: .65; }
+.db small { display: block; font-size: 13px; color: var(--muted); line-height: 1.35; }
+.empty { padding: 44px 0; color: var(--muted); max-width: 52ch; }
+.empty b { display: block; font-family: var(--serif); font-weight: 400; font-size: 21px; color: var(--text); margin-bottom: 6px; }
+.note { font-size: 13.5px; color: var(--muted); margin: 14px 0 0; }
+
+/* sound + timer */
+.two { display: grid; grid-template-columns: 1.15fr 1fr; gap: 44px; }
+.panel h3 { margin-bottom: 4px; }
+.panel > p { margin: 0 0 16px; color: var(--muted); font-size: 15px; }
+.layer { display: grid; grid-template-columns: 130px 1fr auto; gap: 14px; align-items: center; padding: 11px 0; border-top: 1px solid var(--line); }
+.layer:last-of-type { border-bottom: 1px solid var(--line); }
+.layer .nm { font-size: 15.5px; }
+.layer .nm small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.3; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.switch { border: 1px solid var(--line); background: var(--surface); border-radius: 3px; padding: 4px 12px; font-size: 14px; min-width: 62px; }
+.switch[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--mark); }
+.mixrow { display: grid; grid-template-columns: 130px 1fr 44px; gap: 14px; align-items: center; margin: 16px 0 6px; font-size: 15px; }
+.mixrow output { text-align: right; color: var(--muted); font-size: 14px; }
+.inline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 14.5px; color: var(--muted); margin-top: 10px; }
+.inline select { border: 1px solid var(--line); background: var(--surface); padding: 4px 8px; border-radius: 3px; }
+
+.timer { text-align: center; border: 1px solid var(--line); background: var(--surface); padding: 26px 18px 22px; border-radius: 3px; }
+.ringbox { position: relative; width: 210px; height: 210px; margin: 0 auto 14px; }
+.ringbox svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ringbox .tr { fill: none; stroke: var(--sunk); stroke-width: 6; }
+.ringbox .pr { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; opacity: .7; transition: stroke-dashoffset .3s linear; }
+.ringbox .read { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.read .t { font-family: var(--serif); font-size: 48px; font-variant-numeric: tabular-nums; line-height: 1; }
+.read .l { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.modes { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.modes button { border: 1px solid var(--line); background: transparent; border-radius: 3px; padding: 4px 11px; font-size: 14px; color: var(--muted); }
+.modes button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--mark); color: var(--text); }
+.tbtns { display: flex; justify-content: center; gap: 8px; }
+.custom { display: flex; gap: 8px; justify-content: center; align-items: center; margin-top: 14px; font-size: 14px; color: var(--muted); }
+.custom input { width: 64px; border: 1px solid var(--line); background: var(--bg); border-radius: 3px; padding: 4px 6px; text-align: center; }
+.today { margin: 14px 0 0; font-size: 13.5px; color: var(--muted); }
+
+/* meter */
+.meter { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: start; }
+.meter .box { border: 1px solid var(--line); background: var(--surface); padding: 22px; border-radius: 3px; }
+.meter .big { font-family: var(--serif); font-size: 58px; line-height: 1; }
+.meter .big small { font-size: 18px; color: var(--muted); font-family: var(--sans); margin-left: 6px; }
+.meter .lvl { height: 6px; background: var(--sunk); border-radius: 3px; overflow: hidden; margin: 14px 0 10px; }
+.meter .lvl i { display: block; height: 100%; width: 0; background: var(--accent); opacity: .65; transition: width .12s linear; }
+.meter .status { color: var(--muted); font-size: 14.5px; min-height: 24px; margin: 0 0 14px; }
+.meter ol { margin: 0; padding-left: 20px; color: var(--muted); font-size: 15px; }
+.meter ol li { margin-bottom: 6px; }
+.meter p.cav { font-size: 13.5px; color: var(--muted); border-left: 2px solid var(--line); padding-left: 12px; margin: 16px 0 0; }
+
+/* guide */
+.range3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.range3 > div { padding: 22px 22px 22px 0; }
+.range3 > div + div { padding-left: 22px; border-left: 1px solid var(--line); }
+.range3 .rg { font-family: var(--serif); font-size: 15px; color: var(--muted); margin-bottom: 4px; }
+.range3 p { margin: 8px 0 0; color: var(--muted); font-size: 15px; }
+table.ref { width: 100%; border-collapse: collapse; margin-top: 34px; font-size: 15px; }
+table.ref caption { text-align: left; font-family: var(--serif); font-size: 20px; padding-bottom: 8px; }
+table.ref th, table.ref td { text-align: left; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.ref th { font-weight: 400; font-size: 13px; color: var(--muted); }
+table.ref td:first-child { width: 90px; font-variant-numeric: tabular-nums; }
+.tips { margin: 34px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 44px; padding: 0; list-style: none; }
+.tips li { padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; color: var(--muted); }
+.tips li b { color: var(--text); font-weight: 600; }
+
+/* dialog */
+dialog { border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 4px; padding: 0; width: min(620px, calc(100vw - 28px)); max-height: calc(100vh - 40px); box-shadow: 0 10px 40px rgba(40, 38, 32, .18); }
+dialog::backdrop { background: rgba(60, 58, 52, .35); }
+.dlg { padding: 26px 28px 24px; }
+.dlg-head { display: flex; justify-content: space-between; gap: 16px; align-items: start; margin-bottom: 6px; }
+.x { background: none; border: 0; font-size: 22px; line-height: 1; padding: 2px 6px; color: var(--muted); }
+.x:hover { color: var(--text); }
+.dlg p { margin: 0 0 12px; }
+.dlg .meta { margin-bottom: 14px; }
+.dl { margin: 16px 0; border-top: 1px solid var(--line); }
+.dl div { display: grid; grid-template-columns: 120px 1fr; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.dl dt { color: var(--muted); font-size: 14px; }
+.dl dd { margin: 0; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid { display: grid; gap: 14px; }
+.checks { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14.5px; }
+.checks label { display: flex; gap: 6px; align-items: center; }
+.err { color: var(--warn); font-size: 13.5px; min-height: 18px; margin: 0; }
+.actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; flex-wrap: wrap; }
+.report { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.report .field { max-width: 150px; }
+.report form { display: flex; gap: 10px; align-items: end; }
+
+footer { border-top: 1px solid var(--line); padding: 30px 0 46px; color: var(--muted); font-size: 14px; }
+footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+footer p { margin: 0 0 6px; max-width: 54ch; }
+.data-tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: start; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg); padding: 9px 16px; border-radius: 3px; font-size: 14.5px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 50; max-width: calc(100vw - 32px); }
+.toast.on { opacity: .94; transform: translateX(-50%) translateY(0); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 820px) {
+  .hero { grid-template-columns: 1fr; gap: 26px; padding-top: 40px; }
+  .hero aside { border-left: 0; border-top: 1px solid var(--line); padding: 16px 0 0; display: flex; gap: 30px; }
+  .hero aside div + div { margin-top: 0; }
+  .two, .meter { grid-template-columns: 1fr; gap: 34px; }
+  .filters { grid-template-columns: 1fr 1fr; }
+  .filters .field:first-child { grid-column: 1 / -1; }
+  .spot { grid-template-columns: 1fr auto; gap: 14px; }
+  .spot .db { grid-column: 1 / -1; grid-row: 2; display: grid; grid-template-columns: auto 1fr; gap: 0 14px; align-items: center; }
+  .spot .db .bar { margin: 0; grid-column: 2; grid-row: 1; }
+  .spot .db small { grid-column: 1 / -1; margin-top: 4px; }
+  .range3 { grid-template-columns: 1fr; }
+  .range3 > div, .range3 > div + div { padding: 18px 0; border-left: 0; }
+  .range3 > div + div { border-top: 1px solid var(--line); }
+  .tips { grid-template-columns: 1fr; }
+  .top nav { display: none; }
+}
+@media (max-width: 520px) {
+  .layer { grid-template-columns: 1fr auto; }
+  .layer input[type=range] { grid-column: 1 / -1; grid-row: 2; }
+  .mixrow { grid-template-columns: 100px 1fr 40px; }
+  .row2 { grid-template-columns: 1fr; }
+  .dlg { padding: 20px 18px; }
+  .dl div { grid-template-columns: 1fr; gap: 0; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">Quiet<span>Spot</span></a>
+    <nav aria-label="Sections">
+      <a href="#spots">Spots</a>
+      <a href="#sounds">Sounds and timer</a>
+      <a href="#measure">Measure a room</a>
+      <a href="#guide">Noise guide</a>
+    </nav>
+    <button class="btn" id="installBtn" type="button" hidden>Install app</button>
+    <button class="btn" id="themeBtn" type="button" aria-label="Switch colour theme">Dim</button>
+    <button class="btn main" id="openAdd" type="button">Add a spot</button>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <p class="kicker">A small directory of quiet places</p>
+        <h1>Somewhere quiet enough to think.</h1>
+        <p class="lead">Libraries, tea houses, garden corners and study rooms, listed with how loud they actually are. Keep the ones you like, add the ones you find, and use the sound mixer and timer when the room is not enough.</p>
+      </div>
+      <aside aria-label="Summary">
+        <div><b id="statSpots">0</b>spots listed</div>
+        <div><b id="statQuiet">0</b>at or under 40 dB</div>
+        <div><b id="statSaved">0</b>saved by you</div>
+      </aside>
+    </div>
+
+    <section id="spots" aria-labelledby="h-spots">
+      <div class="sec-head">
+        <span class="no">1</span>
+        <h2 id="h-spots">Find a spot</h2>
+        <p>Search by name, area or amenity. Noise levels are typical readings in decibels (dB); lower is quieter.</p>
+      </div>
+
+      <p class="note" id="modeNote" style="margin:-8px 0 18px"></p>
+
+      <div class="filters">
+        <label class="field">Search
+          <input type="search" id="q" placeholder="Name, area, Wi-Fi, tea" autocomplete="off">
+        </label>
+        <label class="field">Loudest acceptable
+          <select id="maxDb">
+            <option value="100">Any level</option>
+            <option value="30">30 dB or less</option>
+            <option value="40">40 dB or less</option>
+            <option value="50">50 dB or less</option>
+          </select>
+        </label>
+        <label class="field">Sort by
+          <select id="sort">
+            <option value="quiet">Quietest first</option>
+            <option value="name">Name</option>
+            <option value="new">Newest first</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="tabs" id="cats" role="group" aria-label="Category"></div>
+
+      <div class="listbar">
+        <span id="count" aria-live="polite"></span>
+        <span>
+          <span id="syncNote"></span>
+          <button class="linkbtn" id="refreshBtn" type="button" hidden>Refresh</button>
+          <button class="linkbtn" id="clear" type="button" style="margin-left:12px">Clear filters</button>
+        </span>
+      </div>
+      <ul class="spots" id="list"></ul>
+      <p class="note" id="sampleNote">The first entries are sample listings to show how the page works. Remove them, or add the places you actually know.</p>
+    </section>
+
+    <section id="sounds" aria-labelledby="h-sounds">
+      <div class="sec-head">
+        <span class="no">2</span>
+        <h2 id="h-sounds">Sounds and focus timer</h2>
+        <p>The sounds are generated in your browser, so there is nothing to download and they work offline once this page has loaded.</p>
+      </div>
+      <div class="two">
+        <div class="panel">
+          <h3>Ambient mixer</h3>
+          <p>Turn on one layer or blend a few.</p>
+          <div id="layers"></div>
+          <div class="mixrow">
+            <label for="master">Overall volume</label>
+            <input type="range" id="master" min="0" max="100" value="60">
+            <output id="masterOut" for="master">60%</output>
+          </div>
+          <div class="inline">
+            <label for="sleep">Stop sounds after</label>
+            <select id="sleep">
+              <option value="0">Never</option>
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="60">1 hour</option>
+            </select>
+            <span id="sleepNote"></span>
+            <button class="btn small" id="stopAll" type="button" style="margin-left:auto">Stop all</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Focus timer</h3>
+          <p>Work in blocks, rest in between.</p>
+          <div class="timer">
+            <div class="modes" id="modes" role="group" aria-label="Timer length"></div>
+            <div class="ringbox">
+              <svg viewBox="0 0 200 200" aria-hidden="true"><circle class="tr" cx="100" cy="100" r="92"/><circle class="pr" id="ring" cx="100" cy="100" r="92"/></svg>
+              <div class="read"><span class="t" id="clock" role="timer" aria-live="off">25:00</span><span class="l" id="clockLabel">Focus</span></div>
+            </div>
+            <div class="tbtns">
+              <button class="btn main" id="tGo" type="button">Start</button>
+              <button class="btn" id="tReset" type="button">Reset</button>
+            </div>
+            <form class="custom" id="customForm">
+              <label for="customMin">Own length</label>
+              <input type="number" id="customMin" min="1" max="180" value="30" inputmode="numeric">
+              <span>minutes</span>
+              <button class="btn small" type="submit">Set</button>
+            </form>
+          </div>
+          <p class="today" id="today"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="measure" aria-labelledby="h-measure">
+      <div class="sec-head">
+        <span class="no">3</span>
+        <h2 id="h-measure">Measure a room</h2>
+        <p>Listens through your microphone for six seconds and gives a rough decibel figure you can use when adding a spot.</p>
+      </div>
+      <div class="meter">
+        <div class="box">
+          <div class="big"><span id="mNum">--</span><small>dB</small></div>
+          <div class="lvl"><i id="mBar"></i></div>
+          <p class="status" id="mStatus" aria-live="polite">Not measuring.</p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn main" id="mGo" type="button">Measure for 6 seconds</button>
+            <button class="btn" id="mUse" type="button" hidden>Use this in a new spot</button>
+          </div>
+        </div>
+        <div>
+          <ol>
+            <li>Stand or sit where you would actually work.</li>
+            <li>Hold the phone or laptop still and stay quiet.</li>
+            <li>Allow microphone access when your browser asks.</li>
+            <li>Take it two or three times at different hours.</li>
+          </ol>
+          <p class="cav">Phone and laptop microphones are not calibrated, so treat the number as a guide within about 10 dB. Nothing is recorded or sent anywhere; the audio is only measured as it arrives.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="guide" aria-labelledby="h-guide">
+      <div class="sec-head">
+        <span class="no">4</span>
+        <h2 id="h-guide">Noise guide</h2>
+        <p>What the numbers mean for reading, writing and thinking.</p>
+      </div>
+      <div class="range3">
+        <div><div class="rg">20 to 30 dB</div><h3>Whisper quiet</h3><p>Archive rooms, empty chapels, a garden before the town wakes up. Good for slow reading and anything that needs your full attention.</p></div>
+        <div><div class="rg">30 to 42 dB</div><h3>Library calm</h3><p>Pages turning, soft footsteps, a distant hum. Suits long reading sessions, writing and revision.</p></div>
+        <div><div class="rg">42 to 52 dB</div><h3>Gentle murmur</h3><p>A café with low talk and soft music. Fine for sketching, coding, and loose first drafts.</p></div>
+      </div>
+
+      <table class="ref">
+        <caption>Everyday sounds for comparison</caption>
+        <thead><tr><th>Level</th><th>Sound</th></tr></thead>
+        <tbody>
+          <tr><td>10 dB</td><td>Slow breathing</td></tr>
+          <tr><td>20 dB</td><td>Leaves moving in a light breeze</td></tr>
+          <tr><td>30 dB</td><td>A whisper at arm's length</td></tr>
+          <tr><td>40 dB</td><td>Quiet reading room, refrigerator hum</td></tr>
+          <tr><td>50 dB</td><td>Light rain, a quiet office</td></tr>
+          <tr><td>60 dB</td><td>Normal conversation</td></tr>
+          <tr><td>70 dB</td><td>Busy street, vacuum cleaner</td></tr>
+          <tr><td>85 dB</td><td>Heavy traffic. Long exposure can damage hearing.</td></tr>
+        </tbody>
+      </table>
+
+      <ul class="tips">
+        <li><b>Go early.</b> Most places are at their quietest in the first hour after opening.</li>
+        <li><b>Sit away from doors.</b> Entrances, counters and printers are where the sound comes from.</li>
+        <li><b>Carry earplugs.</b> They do more than headphones for a lot less money.</li>
+        <li><b>Check the policy.</b> Rooms with a stated quiet rule stay quiet; rooms without one drift.</li>
+      </ul>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <p id="footNote">Quiet Spot is a plain HTML page. Everything you save or add stays in this browser and is not sent anywhere.</p>
+      <p>&copy; 2026 Quiet Spot</p>
+    </div>
+    <div class="data-tools">
+      <button class="btn small" id="exportBtn" type="button">Export my data</button>
+      <button class="btn small" id="importBtn" type="button">Import data</button>
+      <button class="btn small" id="restoreBtn" type="button">Restore sample spots</button>
+      <input type="file" id="importFile" accept="application/json" hidden>
+    </div>
+  </div>
+</footer>
+
+<dialog id="detail" aria-labelledby="dTitle"><div class="dlg" id="detailBody"></div></dialog>
+
+<dialog id="addDlg" aria-labelledby="addTitle">
+  <form class="dlg" id="addForm" novalidate>
+    <div class="dlg-head">
+      <div>
+        <h3 id="addTitle">Add a quiet spot</h3>
+        <p class="meta" id="addMeta" style="margin:4px 0 0">Only add places you have been to.</p>
+      </div>
+      <button class="x" type="button" data-close aria-label="Close">&times;</button>
+    </div>
+    <div class="form-grid">
+      <label class="field">Name
+        <input type="text" id="fName" maxlength="70" required>
+      </label>
+      <div class="row2">
+        <label class="field">Type of place
+          <select id="fCat"></select>
+        </label>
+        <label class="field">Area or neighbourhood
+          <input type="text" id="fArea" maxlength="70" required>
+        </label>
+      </div>
+      <label class="field">Typical noise level: <span id="fDbOut">35 dB</span>
+        <input type="range" id="fDb" min="20" max="65" value="35">
+      </label>
+      <fieldset style="border:0;padding:0;margin:0">
+        <legend class="field" style="margin-bottom:6px">What it has</legend>
+        <div class="checks" id="fAmen"></div>
+      </fieldset>
+      <label class="field">What is it like, and any tips
+        <textarea id="fDesc" maxlength="400"></textarea>
+      </label>
+      <label class="field">Your name or nickname (optional)
+        <input type="text" id="fBy" maxlength="40" autocomplete="nickname">
+      </label>
+      <div style="position:absolute;left:-9999px;height:0;overflow:hidden" aria-hidden="true">
+        <label>Website <input type="text" id="fWebsite" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <p class="err" id="fErr" role="alert"></p>
+    </div>
+    <div class="actions">
+      <button class="btn" type="button" data-close>Cancel</button>
+      <button class="btn main" type="submit" id="addSubmit">Add spot</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var clamp = function (n, a, b) { return Math.max(a, Math.min(b, n)); };
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  var store = {
+    get: function (k, d) { try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  /* ---------- data ---------- */
+  var CATS = {
+    library: 'Libraries',
+    cafe: 'Cafes and tea houses',
+    garden: 'Gardens and parks',
+    pod: 'Quiet pods',
+    bookstore: 'Bookstores'
+  };
+  var CAT_ONE = {
+    library: 'Library',
+    cafe: 'Cafe or tea house',
+    garden: 'Garden or park',
+    pod: 'Quiet pod',
+    bookstore: 'Bookstore'
+  };
+  var AMEN = {
+    wifi: 'Wi-Fi',
+    power: 'Power outlets',
+    daylight: 'Natural daylight',
+    drinks: 'Tea or coffee',
+    policy: 'Strict quiet policy',
+    outdoor: 'Outdoor seating',
+    free: 'Free entry'
+  };
+
+  var SEEDS = [
+    { id: 's1', name: 'Old Town Reading Room', cat: 'library', area: 'Old Town', db: 28, amen: ['policy', 'daylight', 'power', 'free'], desc: 'A long room with high windows and wooden tables. Phones stay in bags and staff will ask you to whisper. Tables by the windows are taken first, so arrive early.', order: 1 },
+    { id: 's2', name: 'Fernside Garden Corner', cat: 'garden', area: 'Riverside', db: 31, amen: ['outdoor', 'daylight', 'free'], desc: 'A walled corner at the back of a small park with benches under trees. Quietest on weekday mornings; the path on the far side gets busy with joggers after five.', order: 2 },
+    { id: 's3', name: 'The Paper Lantern Tea House', cat: 'cafe', area: 'Market Street', db: 41, amen: ['drinks', 'wifi', 'power'], desc: 'Low music, small tables and a no-calls rule. The upstairs room is calmer than the ground floor. Good for a couple of hours of writing.', order: 3 },
+    { id: 's4', name: 'Silent Floor, Central Library', cat: 'library', area: 'City Centre', db: 33, amen: ['policy', 'power', 'wifi', 'free'], desc: 'The top floor is kept silent and the carrels along the wall have lamps and sockets. The lower floors are noticeably louder, so go straight up.', order: 4 },
+    { id: 's5', name: 'Hollow Books', cat: 'bookstore', area: 'Station Road', db: 38, amen: ['drinks', 'free'], desc: 'Second-hand bookshop with a few armchairs at the back. No one minds if you read a chapter. Busy on Saturdays, near empty on weekday afternoons.', order: 5 },
+    { id: 's6', name: 'Booth Seven', cat: 'pod', area: 'Tech Park', db: 24, amen: ['power', 'wifi', 'policy'], desc: 'Sound-insulated booths bookable by the hour. Very still inside, with a fan for air. Book ahead for mornings.', order: 6 },
+    { id: 's7', name: 'Quarry Lane Cafe', cat: 'cafe', area: 'Eastside', db: 49, amen: ['drinks', 'wifi', 'outdoor'], desc: 'Warm, busy and friendly. Not silent, but the noise is a steady murmur that suits sketching and coding. Avoid the lunch hour.', order: 7 },
+    { id: 's8', name: 'Cloister Walk', cat: 'garden', area: 'University Quarter', db: 27, amen: ['outdoor', 'daylight', 'free'], desc: 'A covered stone walkway around a small lawn. Sound carries a little, but there is little to carry. Good for thinking, less so for laptops.', order: 8 }
+  ];
+
+  var state = {
+    q: '', cat: 'all', maxDb: 100, sort: 'quiet', savedOnly: false
+  };
+
+  function userSpots() { return store.get('qs.spots', []); }
+  function hiddenIds() { return store.get('qs.hidden', []); }
+  function savedIds() { return store.get('qs.saved', []); }
+  function reports() { return store.get('qs.reports', {}); }
+
+  /* ---------- shared backend (Firestore over plain web requests) ---------- */
+  var CFG = window.QUIETSPOT_CONFIG || {};
+  var shared = !!(CFG.projectId && CFG.apiKey);
+  var API = (CFG.apiBase || 'https://firestore.googleapis.com/v1') + '/projects/' + encodeURIComponent(CFG.projectId || '') + '/databases/(default)/documents';
+  var FLAG_LIMIT = CFG.flagLimit || 3;
+  var COOLDOWN_MS = 30000;
+  var remote = { spots: [], readings: {}, flags: {}, loaded: false, failed: false, at: 0, busy: false, v: -1 };
+
+  function enc(v) {
+    if (typeof v === 'string') return { stringValue: v };
+    if (typeof v === 'number') return { integerValue: String(Math.round(v)) };
+    if (Array.isArray(v)) return v.length ? { arrayValue: { values: v.map(enc) } } : { arrayValue: {} };
+    return { nullValue: null };
+  }
+  function dec(f) {
+    if (!f) return null;
+    if ('stringValue' in f) return f.stringValue;
+    if ('integerValue' in f) return parseInt(f.integerValue, 10);
+    if ('doubleValue' in f) return f.doubleValue;
+    if ('booleanValue' in f) return f.booleanValue;
+    if ('arrayValue' in f) return (f.arrayValue.values || []).map(dec);
+    return null;
+  }
+  function fromDoc(d) {
+    var o = { id: String(d.name).split('/').pop() };
+    Object.keys(d.fields || {}).forEach(function (k) { o[k] = dec(d.fields[k]); });
+    return o;
+  }
+  function apiCheck(res) {
+    if (!res.ok) {
+      var e = new Error('HTTP ' + res.status);
+      e.status = res.status;
+      throw e;
+    }
+    return res.json();
+  }
+  function apiList(col) {
+    var out = [], pages = 0;
+    function page(tok) {
+      var url = API + '/' + col + '?pageSize=300&key=' + encodeURIComponent(CFG.apiKey) + (tok ? '&pageToken=' + encodeURIComponent(tok) : '');
+      return fetch(url).then(apiCheck).then(function (j) {
+        out = out.concat(j.documents || []);
+        pages++;
+        return (j.nextPageToken && pages < 20) ? page(j.nextPageToken) : out;
+      });
+    }
+    return page('');
+  }
+  function apiCreate(col, obj) {
+    var fields = {};
+    Object.keys(obj).forEach(function (k) { fields[k] = enc(obj[k]); });
+    return fetch(API + '/' + col + '?key=' + encodeURIComponent(CFG.apiKey), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields: fields })
+    }).then(apiCheck).then(fromDoc);
+  }
+  function applyRemote(spots, readings, flags) {
+    remote.spots = spots.filter(function (s) { return s && s.name && s.area && CAT_ONE[s.cat]; });
+    var rd = {};
+    readings.forEach(function (r) {
+      if (r.spotId && typeof r.value === 'number' && r.value >= 15 && r.value <= 110) (rd[r.spotId] = rd[r.spotId] || []).push(r.value);
+    });
+    var fl = {};
+    flags.forEach(function (f) { if (f.spotId) fl[f.spotId] = (fl[f.spotId] || 0) + 1; });
+    remote.readings = rd; remote.flags = fl;
+  }
+  // A tiny document, meta/state, holds one number that changes whenever anyone adds a spot,
+  // a reading or a report. Every open phone checks that one number every few seconds and only
+  // downloads the full list when it has changed, so updates arrive within seconds and cost
+  // one small read per check.
+  function apiMeta() {
+    return fetch(API + '/meta/state?key=' + encodeURIComponent(CFG.apiKey)).then(function (res) {
+      if (res.status === 404) return 0;
+      return apiCheck(res).then(function (d) { return (d.fields && dec(d.fields.v)) || 0; });
+    });
+  }
+  function apiBump() {
+    return fetch(API + '/meta/state?key=' + encodeURIComponent(CFG.apiKey) + '&updateMask.fieldPaths=v', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields: { v: { integerValue: String(Date.now()) } } })
+    }).then(apiCheck);
+  }
+  function countActivity() {
+    var n = remote.spots.length;
+    Object.keys(remote.readings).forEach(function (k) { n += remote.readings[k].length; });
+    Object.keys(remote.flags).forEach(function (k) { n += remote.flags[k]; });
+    return n;
+  }
+  function loadRemote(manual) {
+    if (!shared || remote.busy) return Promise.resolve();
+    remote.busy = true;
+    paintSync();
+    var before = countActivity(), hadData = remote.loaded;
+    // read the change marker first, so anything written while the lists download is caught next check
+    return apiMeta().catch(function () { return remote.v; }).then(function (v) {
+      return Promise.all([apiList('spots'), apiList('readings'), apiList('flags')]).then(function (r) {
+        applyRemote(r[0].map(fromDoc), r[1].map(fromDoc), r[2].map(fromDoc));
+        remote.v = v;
+        remote.loaded = true; remote.failed = false; remote.at = Date.now();
+        store.set('qs.cache', { spots: remote.spots, readings: remote.readings, flags: remote.flags, at: remote.at, v: remote.v });
+        if (manual) toast('List updated');
+        else if (hadData && countActivity() !== before) toast('Updated with new activity from other students');
+      });
+    }).catch(function () {
+      remote.failed = true;
+      if (manual) toast('Could not reach the shared list');
+    }).then(function () {
+      remote.busy = false;
+      render(); paintSync();
+      if (detail.open && openId && findSpot(openId)) {
+        // refresh the open details without wiping a reading someone is typing
+        var inp = $('#repVal'), typed = inp ? inp.value : '', hadFocus = inp && document.activeElement === inp;
+        openDetail(openId);
+        inp = $('#repVal');
+        if (inp && typed) { inp.value = typed; if (hadFocus) inp.focus(); }
+      }
+    });
+  }
+
+  var lastActive = Date.now(), pollTimer = null;
+  function markActive() { lastActive = Date.now(); }
+  function pollDelay() {
+    var base = Math.max(2000, CFG.pollMs || 5000);
+    if (remote.failed) return Math.max(base, 15000);
+    var idle = Date.now() - lastActive;
+    return idle < 120000 ? base : (idle < 600000 ? base * 4 : base * 12);
+  }
+  function schedulePoll() {
+    clearTimeout(pollTimer);
+    if (!shared || document.hidden) return;
+    pollTimer = setTimeout(poll, pollDelay());
+  }
+  function poll() {
+    clearTimeout(pollTimer);
+    if (!shared || document.hidden) return;
+    if (remote.busy) { schedulePoll(); return; }
+    apiMeta().then(function (v) {
+      if (v !== remote.v) return loadRemote(false);
+      remote.failed = false; remote.at = Date.now(); paintSync();
+    }).catch(function () {
+      remote.failed = true; paintSync();
+    }).then(schedulePoll);
+  }
+  function startLiveSync() {
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (ev) {
+      window.addEventListener(ev, markActive, { passive: true });
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) { clearTimeout(pollTimer); return; }
+      markActive();
+      poll();
+    });
+    window.addEventListener('online', function () { markActive(); poll(); });
+    loadRemote(false).then(schedulePoll);
+  }
+  function paintSync() {
+    var n = $('#syncNote'), b = $('#refreshBtn');
+    if (!shared) { n.textContent = ''; b.hidden = true; return; }
+    b.hidden = false;
+    b.disabled = remote.busy;
+    if (remote.busy) n.textContent = 'Updating...';
+    else if (remote.failed) n.textContent = remote.at ? 'Offline. Showing the copy from ' + fmtClock(remote.at) + '.' : 'Cannot reach the shared list.';
+    else if (remote.at) n.textContent = 'Live. Up to date as of ' + fmtClock(remote.at);
+    else n.textContent = '';
+  }
+  function minePrefix() { return store.get('qs.mine', []); }
+  function ratedMap() { return store.get('qs.rated', {}); }
+  function flaggedIds() { return store.get('qs.flagged', []); }
+  function isMine(s) { return shared ? minePrefix().indexOf(s.id) !== -1 : !!s.added; }
+
+  function allSpots() {
+    if (shared) {
+      var fl = flaggedIds();
+      return remote.spots.filter(function (s) {
+        return (remote.flags[s.id] || 0) < FLAG_LIMIT && fl.indexOf(s.id) === -1;
+      });
+    }
+    var hid = hiddenIds();
+    var base = SEEDS.filter(function (s) { return hid.indexOf(s.id) === -1; });
+    return base.concat(userSpots());
+  }
+  function readingsFor(id) {
+    return shared ? (remote.readings[id] || []) : (reports()[id] || []);
+  }
+  function spotDb(s) {
+    var r = readingsFor(s.id);
+    if (!r.length) return { v: s.db, n: 0 };
+    var sum = r.reduce(function (a, b) { return a + b; }, s.db);
+    return { v: Math.round(sum / (r.length + 1)), n: r.length };
+  }
+  function levelLabel(db) {
+    if (db <= 30) return 'Whisper quiet';
+    if (db <= 42) return 'Library calm';
+    if (db <= 52) return 'Gentle murmur';
+    return 'Lively';
+  }
+  function findSpot(id) {
+    var a = allSpots();
+    for (var i = 0; i < a.length; i++) if (a[i].id === id) return a[i];
+    return null;
+  }
+
+  /* ---------- toast ---------- */
+  var toastTimer;
+  function toast(msg) {
+    var t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('on'); }, 2800);
+  }
+
+  /* ---------- theme ---------- */
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    $('#themeBtn').textContent = t === 'dim' ? 'Light' : 'Dim';
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', t === 'dim' ? '#2b2d2b' : '#efebe4');
+  }
+  $('#themeBtn').addEventListener('click', function () {
+    var next = document.documentElement.getAttribute('data-theme') === 'dim' ? 'light' : 'dim';
+    store.set('qs.theme', next);
+    applyTheme(next);
+  });
+  applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
+
+  /* ---------- directory ---------- */
+  function buildCats() {
+    var html = '<button type="button" data-cat="all" aria-pressed="true">All</button>';
+    Object.keys(CATS).forEach(function (k) {
+      html += '<button type="button" data-cat="' + k + '" aria-pressed="false">' + esc(CATS[k]) + '</button>';
+    });
+    html += '<button type="button" data-cat="saved" aria-pressed="false">Saved <span id="savedCount">(0)</span></button>';
+    $('#cats').innerHTML = html;
+    var sel = '';
+    Object.keys(CAT_ONE).forEach(function (k) { sel += '<option value="' + k + '">' + esc(CAT_ONE[k]) + '</option>'; });
+    $('#fCat').innerHTML = sel;
+    var am = '';
+    Object.keys(AMEN).forEach(function (k) {
+      am += '<label><input type="checkbox" value="' + k + '"> ' + esc(AMEN[k]) + '</label>';
+    });
+    $('#fAmen').innerHTML = am;
+  }
+
+  function matches(s, saved) {
+    if (state.savedOnly && saved.indexOf(s.id) === -1) return false;
+    if (state.cat !== 'all' && s.cat !== state.cat) return false;
+    if (spotDb(s).v > state.maxDb) return false;
+    if (state.q) {
+      var hay = [s.name, s.area, CAT_ONE[s.cat], s.desc, (s.amen || []).map(function (a) { return AMEN[a]; }).join(' ')].join(' ').toLowerCase();
+      var parts = state.q.toLowerCase().split(/\s+/).filter(Boolean);
+      for (var i = 0; i < parts.length; i++) if (hay.indexOf(parts[i]) === -1) return false;
+    }
+    return true;
+  }
+
+  function render() {
+    var saved = savedIds();
+    var all = allSpots();
+    var list = all.filter(function (s) { return matches(s, saved); });
+    if (state.sort === 'name') {
+      list.sort(function (a, b) { return a.name.localeCompare(b.name); });
+    } else if (state.sort === 'new') {
+      // spots added by people carry a timestamp and count as newer than the built-in samples
+      list.sort(function (a, b) {
+        var ua = a.added ? 1 : 0, ub = b.added ? 1 : 0;
+        if (ua !== ub) return ub - ua;
+        return ua ? b.added - a.added : a.order - b.order;
+      });
+    } else {
+      list.sort(function (a, b) { return spotDb(a).v - spotDb(b).v || a.name.localeCompare(b.name); });
+    }
+
+    var html = list.map(function (s) {
+      var d = spotDb(s);
+      var isSaved = saved.indexOf(s.id) !== -1;
+      var amen = (s.amen || []).map(function (a) { return AMEN[a]; }).filter(Boolean).join(', ');
+      var fm = (s.desc || '').match(/^.*?[.!?](?=\s|$)/);
+      var first = fm ? fm[0] : (s.desc || '');
+      return '<li class="spot" data-id="' + esc(s.id) + '">' +
+        '<div><h3><button type="button" data-open>' + esc(s.name) + '</button>' + (isMine(s) ? '<span class="tag">added by you</span>' : '') + '</h3>' +
+        '<p class="meta">' + esc(CAT_ONE[s.cat] || '') + ' &middot; ' + esc(s.area) + '</p>' +
+        (first ? '<p class="blurb">' + esc(first) + '</p>' : '') +
+        (amen ? '<p class="amen">' + esc(amen) + '</p>' : '') + '</div>' +
+        '<div class="db"><span><span class="num">' + d.v + '</span><span class="unit">dB</span></span>' +
+        '<span class="bar"><i style="width:' + clamp(((d.v - 20) / 50) * 100, 4, 100).toFixed(0) + '%"></i></span>' +
+        '<small>' + levelLabel(d.v) + (d.n ? ' &middot; ' + d.n + ' reading' + (d.n > 1 ? 's' : '') : '') + '</small></div>' +
+        '<div><button type="button" class="btn small" data-save aria-pressed="' + isSaved + '">' + (isSaved ? 'Saved' : 'Save') + '</button></div>' +
+        '</li>';
+    }).join('');
+
+    if (!list.length) {
+      var msg;
+      if (shared && !remote.loaded && !remote.failed) msg = '<b>Loading the shared list.</b>One moment.';
+      else if (shared && !remote.loaded && remote.failed) msg = '<b>Could not reach the shared list.</b>Check your connection and press Refresh.';
+      else if (shared && !all.length) msg = '<b>No spots have been added yet.</b>Be the first. Use the Add a spot button at the top and tell other students where it is quiet.';
+      else if (state.savedOnly && !saved.length) msg = '<b>Nothing saved yet.</b>Use the Save button next to a spot to keep it here.';
+      else msg = '<b>No spots match.</b>Try a higher noise limit, a different category, or fewer search words. You can also add a place you know.';
+      html = '<li class="empty">' + msg + '</li>';
+    }
+    $('#list').innerHTML = html;
+    $('#count').textContent = 'Showing ' + list.length + ' of ' + all.length + ' spot' + (all.length === 1 ? '' : 's');
+
+    $('#savedCount').textContent = '(' + saved.filter(function (id) { return !!findSpot(id); }).length + ')';
+    $('#statSpots').textContent = all.length;
+    $('#statQuiet').textContent = all.filter(function (s) { return spotDb(s).v <= 40; }).length;
+    $('#statSaved').textContent = saved.filter(function (id) { return !!findSpot(id); }).length;
+    $('#sampleNote').hidden = shared || !all.some(function (s) { return /^s\d+$/.test(s.id); });
+  }
+
+  $('#cats').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-cat]');
+    if (!b) return;
+    var c = b.getAttribute('data-cat');
+    state.savedOnly = c === 'saved';
+    state.cat = (c === 'saved') ? 'all' : c;
+    $$('#cats button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    render();
+  });
+  var qT;
+  $('#q').addEventListener('input', function (e) {
+    clearTimeout(qT);
+    var v = e.target.value.trim();
+    qT = setTimeout(function () { state.q = v; render(); }, 120);
+  });
+  $('#maxDb').addEventListener('change', function (e) { state.maxDb = parseInt(e.target.value, 10); render(); });
+  $('#sort').addEventListener('change', function (e) { state.sort = e.target.value; render(); });
+  function clearFilters() {
+    state.q = ''; state.cat = 'all'; state.maxDb = 100; state.savedOnly = false;
+    $('#q').value = ''; $('#maxDb').value = '100';
+    $$('#cats button').forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-cat') === 'all' ? 'true' : 'false'); });
+    render();
+  }
+  $('#clear').addEventListener('click', clearFilters);
+
+  function toggleSave(id) {
+    var s = savedIds();
+    var i = s.indexOf(id);
+    if (i === -1) { s.push(id); toast('Saved to your list'); } else { s.splice(i, 1); toast('Removed from your list'); }
+    store.set('qs.saved', s);
+    render();
+  }
+
+  $('#list').addEventListener('click', function (e) {
+    var li = e.target.closest('li.spot');
+    if (!li) return;
+    var id = li.getAttribute('data-id');
+    if (e.target.closest('[data-save]')) toggleSave(id);
+    else if (e.target.closest('[data-open]')) openDetail(id);
+  });
+
+  /* ---------- detail dialog ---------- */
+  var detail = $('#detail');
+  var openId = null;
+  function openDetail(id) {
+    var s = findSpot(id);
+    if (!s) return;
+    openId = id;
+    var d = spotDb(s);
+    var saved = savedIds().indexOf(id) !== -1;
+    var amen = (s.amen || []).map(function (a) { return AMEN[a]; }).filter(Boolean);
+    var rep = readingsFor(id);
+    var alreadyRated = shared && ratedMap()[id] != null;
+    var addedLine = (s.added ? 'Added ' + new Date(s.added).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '') +
+      (s.by ? (s.added ? ' by ' : 'Added by ') + esc(s.by) : '');
+    $('#detailBody').innerHTML =
+      '<div class="dlg-head"><div><h3 id="dTitle">' + esc(s.name) + '</h3>' +
+      '<p class="meta" style="margin:4px 0 0">' + esc(CAT_ONE[s.cat] || '') + ' &middot; ' + esc(s.area) + '</p></div>' +
+      '<button class="x" type="button" data-close aria-label="Close">&times;</button></div>' +
+      '<p style="margin-top:14px">' + (s.desc ? esc(s.desc) : 'No description yet.') + '</p>' +
+      '<dl class="dl">' +
+      '<div><dt>Noise level</dt><dd>' + d.v + ' dB, ' + levelLabel(d.v).toLowerCase() + (d.n ? ' (average including ' + d.n + ' reading' + (d.n > 1 ? 's' : '') + (shared ? ' from students' : ' from you') + ')' : '') + '</dd></div>' +
+      (addedLine ? '<div><dt>Listed</dt><dd>' + (s.by ? addedLine : esc(addedLine)) + '</dd></div>' : '') +
+      '<div><dt>What it has</dt><dd>' + (amen.length ? esc(amen.join(', ')) : 'Nothing listed') + '</dd></div>' +
+      '<div><dt>Search for it</dt><dd><a href="https://www.openstreetmap.org/search?query=' + encodeURIComponent(s.name + ' ' + s.area) + '" target="_blank" rel="noopener">Look it up on a map</a></dd></div>' +
+      '</dl>' +
+      '<div class="report">' +
+      (alreadyRated
+        ? '<p class="note" style="margin:0">You added a reading of ' + ratedMap()[id] + ' dB for this place from this device. Thank you.</p>'
+        : '<form id="repForm"><label class="field">Your own reading (dB)<input type="number" id="repVal" min="15" max="110" required inputmode="numeric" placeholder="e.g. 36"></label>' +
+          '<button class="btn" type="submit" id="repSubmit">Add reading</button>' +
+          (!shared && rep.length ? '<button class="linkbtn" type="button" id="repClear" style="margin-left:6px;font-size:13.5px">Clear my readings</button>' : '') +
+          '</form><p class="note">' + (shared ? 'Been here? Add what you measured or felt. Everyone sees the averaged figure, and you can add one reading per place from this device.' : 'Visited and found it louder or quieter than listed? Add what you measured and the figure adjusts.') + '</p>') +
+      '</div>' +
+      '<div class="actions" style="margin-top:18px">' +
+      (shared
+        ? '<button class="btn" type="button" id="dFlag">Report a problem</button>'
+        : '<button class="btn" type="button" id="dRemove">Remove from list</button>') +
+      '<button class="btn main" type="button" id="dSave" aria-pressed="' + saved + '">' + (saved ? 'Saved' : 'Save this spot') + '</button></div>';
+    if (!detail.open) detail.showModal();
+  }
+  detail.addEventListener('click', function (e) {
+    if (e.target === detail || e.target.closest('[data-close]')) { detail.close(); return; }
+    if (e.target.id === 'dSave') { toggleSave(openId); openDetail(openId); }
+    if (e.target.id === 'dRemove') {
+      var s = findSpot(openId);
+      if (!s || !confirm('Remove "' + s.name + '" from your list?')) return;
+      if (s.added) store.set('qs.spots', userSpots().filter(function (x) { return x.id !== s.id; }));
+      else { var h = hiddenIds(); h.push(s.id); store.set('qs.hidden', h); }
+      store.set('qs.saved', savedIds().filter(function (x) { return x !== s.id; }));
+      detail.close();
+      render();
+      toast('Removed');
+    }
+    if (e.target.id === 'repClear') {
+      var r = reports(); delete r[openId]; store.set('qs.reports', r);
+      openDetail(openId); render();
+    }
+    if (e.target.id === 'dFlag') {
+      var fs = findSpot(openId);
+      if (!fs || !confirm('Report "' + fs.name + '" as wrong, fake or inappropriate? It will be hidden for you right away, and hidden for everyone once enough students report it.')) return;
+      var btn = e.target; btn.disabled = true;
+      var fid = openId;
+      apiCreate('flags', { spotId: fid, at: Date.now() }).then(function () {
+        remote.flags[fid] = (remote.flags[fid] || 0) + 1;
+        apiBump().catch(function () {});
+      }).catch(function () {
+        toast('Could not send the report, but it is hidden for you');
+      }).then(function () {
+        var f = flaggedIds(); f.push(fid); store.set('qs.flagged', f);
+        detail.close(); render();
+        toast('Thank you. The spot is hidden for you.');
+      });
+    }
+  });
+  detail.addEventListener('submit', function (e) {
+    if (e.target.id !== 'repForm') return;
+    e.preventDefault();
+    var v = parseInt($('#repVal').value, 10);
+    if (isNaN(v) || v < 15 || v > 110) { toast('Enter a reading between 15 and 110'); return; }
+    if (!shared) {
+      var r = reports();
+      (r[openId] = r[openId] || []).push(v);
+      store.set('qs.reports', r);
+      openDetail(openId); render();
+      toast('Reading added');
+      return;
+    }
+    var sid = openId;
+    if (ratedMap()[sid] != null) { toast('You already added a reading for this place'); return; }
+    $('#repSubmit').disabled = true;
+    apiCreate('readings', { spotId: sid, value: v, at: Date.now() }).then(function () {
+      apiBump().catch(function () {});
+      (remote.readings[sid] = remote.readings[sid] || []).push(v);
+      var rm = ratedMap(); rm[sid] = v; store.set('qs.rated', rm);
+      render();
+      if (detail.open && openId === sid) openDetail(sid);
+      toast('Reading shared with everyone');
+    }).catch(function () {
+      var b = $('#repSubmit'); if (b) b.disabled = false;
+      toast('Could not send your reading. Check your connection.');
+    });
+  });
+
+  /* ---------- add dialog ---------- */
+  var addDlg = $('#addDlg');
+  function openAdd(prefillDb) {
+    $('#addForm').reset();
+    $('#fErr').textContent = '';
+    $('#addSubmit').disabled = false;
+    $('#addSubmit').textContent = 'Add spot';
+    $('#addMeta').textContent = shared
+      ? 'Everyone who uses the app will see this. Only add places you have been to.'
+      : 'Saved on this device only. Only add places you have been to.';
+    $('#fBy').value = store.get('qs.by', '');
+    var db = prefillDb || 35;
+    $('#fDb').value = clamp(db, 20, 65);
+    $('#fDbOut').textContent = $('#fDb').value + ' dB';
+    addDlg.showModal();
+    $('#fName').focus();
+  }
+  $('#openAdd').addEventListener('click', function () { openAdd(); });
+  $('#fDb').addEventListener('input', function (e) { $('#fDbOut').textContent = e.target.value + ' dB'; });
+  addDlg.addEventListener('click', function (e) {
+    if (e.target === addDlg || e.target.closest('[data-close]')) addDlg.close();
+  });
+  $('#addForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = $('#fName').value.trim();
+    var area = $('#fArea').value.trim();
+    if (!name) { $('#fErr').textContent = 'Please give the place a name.'; $('#fName').focus(); return; }
+    if (!area) { $('#fErr').textContent = 'Please say roughly where it is.'; $('#fArea').focus(); return; }
+    var dup = allSpots().some(function (s) { return s.name.toLowerCase() === name.toLowerCase() && s.area.toLowerCase() === area.toLowerCase(); });
+    if (dup) { $('#fErr').textContent = 'That place is already on the list.'; return; }
+    if (name.length < 2 || area.length < 2) { $('#fErr').textContent = 'Name and area need at least two letters.'; return; }
+    var amen = $$('#fAmen input:checked').map(function (c) { return c.value; });
+    var by = $('#fBy').value.trim().slice(0, 40);
+    var spot = {
+      id: 'u' + Date.now(),
+      name: name, area: area,
+      cat: $('#fCat').value,
+      db: parseInt($('#fDb').value, 10),
+      amen: amen,
+      desc: $('#fDesc').value.trim(),
+      added: Date.now()
+    };
+    function finish(sp) {
+      addDlg.close();
+      clearFilters();
+      state.sort = 'new'; $('#sort').value = 'new';
+      render();
+      document.getElementById('spots').scrollIntoView();
+      toast('Added "' + sp.name + '"');
+    }
+    if (!shared) {
+      var u = userSpots(); u.push(spot); store.set('qs.spots', u);
+      finish(spot);
+      return;
+    }
+    // shared mode: a hidden field catches simple bots, and one spot per 30 seconds per device
+    if ($('#fWebsite').value) { addDlg.close(); return; }
+    var last = store.get('qs.lastAdd', 0), wait = COOLDOWN_MS - (Date.now() - last);
+    if (wait > 0) { $('#fErr').textContent = 'Please wait ' + Math.ceil(wait / 1000) + ' seconds before adding another spot.'; return; }
+    var body = { name: spot.name, area: spot.area, cat: spot.cat, db: spot.db, amen: spot.amen, desc: spot.desc, added: spot.added };
+    if (by) { body.by = by; store.set('qs.by', by); }
+    var btn = $('#addSubmit'); btn.disabled = true; btn.textContent = 'Adding...';
+    apiCreate('spots', body).then(function (doc) {
+      apiBump().catch(function () {});
+      store.set('qs.lastAdd', Date.now());
+      var m = minePrefix(); m.push(doc.id); store.set('qs.mine', m);
+      remote.spots.push(doc);
+      finish(doc);
+    }).catch(function (err) {
+      btn.disabled = false; btn.textContent = 'Add spot';
+      $('#fErr').textContent = (err && err.status === 403)
+        ? 'The shared list refused this entry. Check the name, area and description, then try again.'
+        : 'Could not reach the shared list. Check your connection and try again.';
+    });
+  });
+
+  /* ---------- audio mixer ---------- */
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var ctx = null, masterGain = null, bufCache = {};
+  var LAYERS = [
+    { id: 'rain', name: 'Rain', note: 'Steady, soft' },
+    { id: 'pink', name: 'Pink noise', note: 'Even, like a fan' },
+    { id: 'wind', name: 'Wind', note: 'Slow, drifting' },
+    { id: 'drone', name: 'Low hum', note: 'Warm, tonal' }
+  ];
+  var layerState = store.get('qs.layers', {});
+  LAYERS.forEach(function (l) {
+    var s = layerState[l.id] || {};
+    l.vol = typeof s.vol === 'number' ? s.vol : 60;
+    l.on = false;
+    l.live = null;
+  });
+  var masterVal = store.get('qs.master', 60);
+
+  function ensureCtx() {
+    if (!AC) return false;
+    if (!ctx) {
+      ctx = new AC();
+      masterGain = ctx.createGain();
+      masterGain.gain.value = masterVal / 100;
+      masterGain.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return true;
+  }
+  function noiseBuf(kind) {
+    if (bufCache[kind]) return bufCache[kind];
+    var len = ctx.sampleRate * 5;
+    var b = ctx.createBuffer(1, len, ctx.sampleRate);
+    var d = b.getChannelData(0);
+    if (kind === 'white') {
+      for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    } else {
+      var b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (var j = 0; j < len; j++) {
+        var w = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + w * 0.0555179;
+        b1 = 0.99332 * b1 + w * 0.0750759;
+        b2 = 0.96900 * b2 + w * 0.1538520;
+        b3 = 0.86650 * b3 + w * 0.3104856;
+        b4 = 0.55000 * b4 + w * 0.5329522;
+        b5 = -0.7616 * b5 - w * 0.0168980;
+        d[j] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11;
+        b6 = w * 0.115926;
+      }
+    }
+    // soften the loop seam
+    var fade = Math.floor(ctx.sampleRate * 0.05);
+    for (var k = 0; k < fade; k++) {
+      var g = k / fade;
+      d[k] *= g; d[len - 1 - k] *= g;
+    }
+    bufCache[kind] = b;
+    return b;
+  }
+  function src(kind) {
+    var s = ctx.createBufferSource();
+    s.buffer = noiseBuf(kind);
+    s.loop = true;
+    s.start(0, Math.random() * 4);
+    return s;
+  }
+  function lfo(rate, depth, target, offset) {
+    var o = ctx.createOscillator(); o.frequency.value = rate;
+    var g = ctx.createGain(); g.gain.value = depth;
+    o.connect(g); g.connect(target); o.start();
+    return o;
+  }
+  function build(id, out) {
+    var nodes = [];
+    if (id === 'rain') {
+      var s1 = src('white'), hp = ctx.createBiquadFilter(), lp = ctx.createBiquadFilter(), g1 = ctx.createGain();
+      hp.type = 'highpass'; hp.frequency.value = 1100;
+      lp.type = 'lowpass'; lp.frequency.value = 7500;
+      g1.gain.value = 0.22;
+      s1.connect(hp); hp.connect(lp); lp.connect(g1); g1.connect(out);
+      var s2 = src('pink'), lp2 = ctx.createBiquadFilter(), g2 = ctx.createGain();
+      lp2.type = 'lowpass'; lp2.frequency.value = 600; g2.gain.value = 0.5;
+      s2.connect(lp2); lp2.connect(g2); g2.connect(out);
+      nodes.push(s1, s2, lfo(0.11, 0.04, g1.gain));
+    } else if (id === 'pink') {
+      var s3 = src('pink'), lp3 = ctx.createBiquadFilter(), g3 = ctx.createGain();
+      lp3.type = 'lowpass'; lp3.frequency.value = 5000; g3.gain.value = 1.4;
+      s3.connect(lp3); lp3.connect(g3); g3.connect(out);
+      nodes.push(s3);
+    } else if (id === 'wind') {
+      var s4 = src('pink'), bp = ctx.createBiquadFilter(), g4 = ctx.createGain();
+      bp.type = 'bandpass'; bp.frequency.value = 520; bp.Q.value = 0.9; g4.gain.value = 2.2;
+      s4.connect(bp); bp.connect(g4); g4.connect(out);
+      nodes.push(s4, lfo(0.07, 260, bp.frequency), lfo(0.13, 0.7, g4.gain));
+    } else if (id === 'drone') {
+      var lp5 = ctx.createBiquadFilter(), g5 = ctx.createGain();
+      lp5.type = 'lowpass'; lp5.frequency.value = 1100; g5.gain.value = 0.16;
+      lp5.connect(g5); g5.connect(out);
+      [[108, 0], [216, 3], [216, -4], [324, 2], [432, -2]].forEach(function (p, i) {
+        var o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = p[0]; o.detune.value = p[1];
+        var og = ctx.createGain(); og.gain.value = i === 0 ? 1 : (i < 3 ? 0.55 : 0.25);
+        o.connect(og); og.connect(lp5); o.start(); nodes.push(o);
+      });
+      nodes.push(lfo(0.09, 0.05, g5.gain));
+    }
+    return nodes;
+  }
+  function layerOn(l) {
+    if (!ensureCtx()) { toast('This browser cannot play generated sound'); return; }
+    if (l.live) return;
+    var out = ctx.createGain();
+    out.gain.value = 0;
+    out.connect(masterGain);
+    var nodes = build(l.id, out);
+    out.gain.setTargetAtTime(l.vol / 100, ctx.currentTime, 0.6);
+    l.live = { out: out, nodes: nodes };
+    l.on = true;
+  }
+  function layerOff(l) {
+    if (!l.live) { l.on = false; return; }
+    var live = l.live;
+    l.live = null; l.on = false;
+    live.out.gain.setTargetAtTime(0, ctx.currentTime, 0.25);
+    setTimeout(function () {
+      live.nodes.forEach(function (n) { try { n.stop(); } catch (e) {} });
+      try { live.out.disconnect(); } catch (e) {}
+    }, 1400);
+  }
+  function drawLayers() {
+    $('#layers').innerHTML = LAYERS.map(function (l) {
+      return '<div class="layer" data-id="' + l.id + '">' +
+        '<div class="nm">' + esc(l.name) + '<small>' + esc(l.note) + '</small></div>' +
+        '<input type="range" min="0" max="100" value="' + l.vol + '" aria-label="' + esc(l.name) + ' level">' +
+        '<button type="button" class="switch" aria-pressed="' + l.on + '">' + (l.on ? 'On' : 'Off') + '</button></div>';
+    }).join('');
+  }
+  $('#layers').addEventListener('click', function (e) {
+    var b = e.target.closest('.switch');
+    if (!b) return;
+    var l = LAYERS.filter(function (x) { return x.id === b.closest('.layer').getAttribute('data-id'); })[0];
+    if (l.on) layerOff(l); else layerOn(l);
+    b.setAttribute('aria-pressed', l.on); b.textContent = l.on ? 'On' : 'Off';
+    anyOn() ? armSleep() : disarmSleep();
+  });
+  $('#layers').addEventListener('input', function (e) {
+    if (e.target.type !== 'range') return;
+    var l = LAYERS.filter(function (x) { return x.id === e.target.closest('.layer').getAttribute('data-id'); })[0];
+    l.vol = parseInt(e.target.value, 10);
+    var st = {}; LAYERS.forEach(function (x) { st[x.id] = { vol: x.vol }; }); store.set('qs.layers', st);
+    if (l.live && ctx) l.live.out.gain.setTargetAtTime(l.vol / 100, ctx.currentTime, 0.08);
+  });
+  $('#master').value = masterVal;
+  $('#masterOut').textContent = masterVal + '%';
+  $('#master').addEventListener('input', function (e) {
+    masterVal = parseInt(e.target.value, 10);
+    $('#masterOut').textContent = masterVal + '%';
+    store.set('qs.master', masterVal);
+    if (masterGain) masterGain.gain.setTargetAtTime(masterVal / 100, ctx.currentTime, 0.08);
+  });
+  function anyOn() { return LAYERS.some(function (l) { return l.on; }); }
+  function stopAll() {
+    LAYERS.forEach(layerOff);
+    drawLayers();
+    disarmSleep();
+  }
+  $('#stopAll').addEventListener('click', stopAll);
+
+  var sleepT = null, sleepAt = 0, sleepTick = null;
+  function fmtClock(ms) {
+    var d = new Date(ms);
+    var h = d.getHours(), m = d.getMinutes();
+    return (h % 12 || 12) + ':' + (m < 10 ? '0' : '') + m + ' ' + (h < 12 ? 'am' : 'pm');
+  }
+  function armSleep() {
+    disarmSleep();
+    var mins = parseInt($('#sleep').value, 10);
+    if (!mins || !anyOn()) return;
+    sleepAt = Date.now() + mins * 60000;
+    sleepT = setTimeout(function () { stopAll(); toast('Sounds stopped'); }, mins * 60000);
+    $('#sleepNote').textContent = 'Stops at ' + fmtClock(sleepAt);
+  }
+  function disarmSleep() {
+    clearTimeout(sleepT); sleepT = null;
+    $('#sleepNote').textContent = '';
+  }
+  $('#sleep').addEventListener('change', function () { anyOn() ? armSleep() : disarmSleep(); });
+
+  /* ---------- focus timer ---------- */
+  var MODES = [
+    { id: 'focus', label: 'Focus', min: 25 },
+    { id: 'deep', label: 'Deep work', min: 50 },
+    { id: 'rest', label: 'Rest', min: 5 }
+  ];
+  var CIRC = 2 * Math.PI * 92;
+  var timer = store.get('qs.timer', null) || { mode: 'focus', label: 'Focus', total: 25 * 60, left: 25 * 60, endAt: 0, running: false, counts: true };
+  var tickId = null;
+  $('#ring').style.strokeDasharray = CIRC;
+
+  function saveTimer() { store.set('qs.timer', timer); }
+  function fmt(sec) {
+    sec = Math.max(0, Math.ceil(sec));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function timeLeft() {
+    return timer.running ? Math.max(0, (timer.endAt - Date.now()) / 1000) : timer.left;
+  }
+  function paint() {
+    var left = timeLeft();
+    $('#clock').textContent = fmt(left);
+    $('#clockLabel').textContent = timer.label + (timer.running ? '' : (left === timer.total ? '' : ' (paused)'));
+    $('#ring').style.strokeDashoffset = CIRC * (1 - (timer.total ? left / timer.total : 0));
+    $('#tGo').textContent = timer.running ? 'Pause' : (left < timer.total ? 'Resume' : 'Start');
+    document.title = timer.running ? fmt(left) + ' ' + timer.label + ' | Quiet Spot' : 'Quiet Spot';
+    $$('#modes button').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-mode') === timer.mode ? 'true' : 'false');
+    });
+  }
+  function drawModes() {
+    $('#modes').innerHTML = MODES.map(function (m) {
+      return '<button type="button" data-mode="' + m.id + '" aria-pressed="false">' + m.label + ' ' + m.min + ' min</button>';
+    }).join('');
+  }
+  function setMode(id, minutes, label, counts) {
+    timer.mode = id; timer.label = label; timer.total = minutes * 60; timer.left = timer.total;
+    timer.running = false; timer.counts = counts;
+    stopTick(); saveTimer(); paint();
+  }
+  function startTick() { stopTick(); tickId = setInterval(tick, 250); }
+  function stopTick() { if (tickId) { clearInterval(tickId); tickId = null; } }
+  function tick() {
+    if (!timer.running) { stopTick(); return; }
+    if (timer.endAt - Date.now() <= 0) { finish(); return; }
+    paint();
+  }
+  function today() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function sessions() {
+    var s = store.get('qs.sessions', null);
+    if (!s || s.day !== today()) s = { day: today(), count: 0, minutes: 0 };
+    return s;
+  }
+  function paintToday() {
+    var s = sessions();
+    $('#today').textContent = s.count
+      ? 'Today: ' + s.count + ' block' + (s.count > 1 ? 's' : '') + ', ' + s.minutes + ' minute' + (s.minutes === 1 ? '' : 's') + ' of focus.'
+      : 'No focus blocks finished today yet.';
+  }
+  function chime() {
+    try {
+      if (!ensureCtx()) return;
+      [523.25, 659.25].forEach(function (f, i) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.value = f;
+        var t = ctx.currentTime + i * 0.28;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.18, t + 0.04);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(t); o.stop(t + 1.7);
+      });
+    } catch (e) {}
+  }
+  function finish() {
+    stopTick();
+    var mins = Math.round(timer.total / 60);
+    if (timer.counts) {
+      var s = sessions(); s.count += 1; s.minutes += mins; store.set('qs.sessions', s);
+    }
+    timer.running = false; timer.left = timer.total; timer.endAt = 0;
+    saveTimer(); paint(); paintToday(); chime();
+    toast(timer.counts ? 'Block finished. Take a break.' : 'Rest over.');
+  }
+  $('#tGo').addEventListener('click', function () {
+    if (timer.running) {
+      timer.left = timeLeft(); timer.running = false; stopTick();
+    } else {
+      if (timer.left <= 0) timer.left = timer.total;
+      timer.endAt = Date.now() + timer.left * 1000; timer.running = true; startTick();
+      ensureCtx();
+    }
+    saveTimer(); paint();
+  });
+  $('#tReset').addEventListener('click', function () {
+    timer.running = false; timer.left = timer.total; stopTick(); saveTimer(); paint();
+  });
+  $('#modes').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-mode]');
+    if (!b) return;
+    var m = MODES.filter(function (x) { return x.id === b.getAttribute('data-mode'); })[0];
+    setMode(m.id, m.min, m.label, m.id !== 'rest');
+  });
+  $('#customForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = parseInt($('#customMin').value, 10);
+    if (isNaN(v) || v < 1 || v > 180) { toast('Choose between 1 and 180 minutes'); return; }
+    setMode('custom', v, v + ' min', true);
+  });
+  drawModes();
+  if (timer.running) {
+    if (timer.endAt - Date.now() <= 0) { timer.running = false; timer.left = timer.total; saveTimer(); }
+    else startTick();
+  }
+  paint(); paintToday();
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) paint(); });
+
+  /* ---------- noise meter ---------- */
+  var meter = { running: false, last: null };
+  function stopMeterStreams(m) {
+    try { m.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+    try { m.ctx.close(); } catch (e) {}
+  }
+  function startMeter() {
+    if (meter.running) return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !AC) {
+      $('#mStatus').textContent = 'This browser cannot access a microphone. Try a recent Chrome, Safari or Firefox over https.';
+      return;
+    }
+    $('#mStatus').textContent = 'Waiting for microphone permission.';
+    navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }).then(function (stream) {
+      var mctx = new AC();
+      var node = mctx.createMediaStreamSource(stream);
+      var an = mctx.createAnalyser(); an.fftSize = 2048;
+      node.connect(an);
+      var buf = new Float32Array(an.fftSize);
+      var m = { stream: stream, ctx: mctx };
+      var samples = [], start = performance.now(), shown = 0, smooth = null, lastPaint = 0;
+      meter.running = true;
+      $('#mGo').disabled = true; $('#mUse').hidden = true;
+      function loop(now) {
+        if (!meter.running) return;
+        an.getFloatTimeDomainData(buf);
+        var sum = 0;
+        for (var i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+        var rms = Math.sqrt(sum / buf.length);
+        var est = clamp(20 * Math.log10(rms || 1e-8) + 94, 20, 100);
+        smooth = smooth === null ? est : smooth * 0.85 + est * 0.15;
+        var elapsed = now - start;
+        if (elapsed > 600) samples.push(est);
+        if (now - lastPaint > 90) {
+          lastPaint = now;
+          $('#mNum').textContent = Math.round(smooth);
+          $('#mBar').style.width = clamp(((smooth - 20) / 70) * 100, 2, 100) + '%';
+          $('#mStatus').textContent = 'Listening... ' + Math.max(0, Math.ceil((6000 - elapsed) / 1000)) + 's';
+        }
+        if (elapsed >= 6000) {
+          meter.running = false;
+          stopMeterStreams(m);
+          var avg = samples.reduce(function (a, b) { return a + b; }, 0) / (samples.length || 1);
+          avg = Math.round(avg);
+          meter.last = avg;
+          $('#mNum').textContent = avg;
+          $('#mBar').style.width = clamp(((avg - 20) / 70) * 100, 2, 100) + '%';
+          $('#mStatus').textContent = 'Average about ' + avg + ' dB. ' + levelLabel(avg) + '.';
+          $('#mGo').disabled = false; $('#mGo').textContent = 'Measure again';
+          $('#mUse').hidden = false;
+          return;
+        }
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    }).catch(function (err) {
+      meter.running = false;
+      $('#mStatus').textContent = (err && err.name === 'NotAllowedError')
+        ? 'Microphone access was blocked. Allow it in your browser settings and try again.'
+        : 'No microphone could be opened on this device.';
+    });
+  }
+  $('#mGo').addEventListener('click', startMeter);
+  $('#mUse').addEventListener('click', function () {
+    if (meter.last != null) openAdd(clamp(meter.last, 20, 65));
+  });
+
+  /* ---------- data tools ---------- */
+  $('#exportBtn').addEventListener('click', function () {
+    var data = shared
+      ? { app: 'quietspot-shared', version: 1, saved: savedIds(), mine: minePrefix(), rated: ratedMap() }
+      : { app: 'quietspot', version: 1, spots: userSpots(), hidden: hiddenIds(), saved: savedIds(), reports: reports() };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'quietspot-data.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    toast('Data exported');
+  });
+  $('#importBtn').addEventListener('click', function () { $('#importFile').click(); });
+  $('#importFile').addEventListener('change', function (e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var d = JSON.parse(r.result);
+        if (d.app !== 'quietspot') throw new Error('x');
+        var cur = userSpots(), ids = cur.map(function (s) { return s.id; });
+        (d.spots || []).forEach(function (s) {
+          if (s && s.id && s.name && CAT_ONE[s.cat] && ids.indexOf(s.id) === -1) {
+            cur.push({ id: String(s.id), name: String(s.name).slice(0, 70), area: String(s.area || '').slice(0, 70), cat: s.cat, db: clamp(parseInt(s.db, 10) || 35, 15, 100), amen: (s.amen || []).filter(function (a) { return AMEN[a]; }), desc: String(s.desc || '').slice(0, 400), added: Number(s.added) || Date.now() });
+          }
+        });
+        store.set('qs.spots', cur);
+        store.set('qs.hidden', Array.from(new Set(hiddenIds().concat(d.hidden || []))));
+        store.set('qs.saved', Array.from(new Set(savedIds().concat(d.saved || []))));
+        var rep = reports();
+        Object.keys(d.reports || {}).forEach(function (k) { if (Array.isArray(d.reports[k]) && !rep[k]) rep[k] = d.reports[k].map(Number).filter(function (n) { return n >= 15 && n <= 110; }); });
+        store.set('qs.reports', rep);
+        render(); toast('Data imported');
+      } catch (err) { toast('That file could not be read'); }
+      e.target.value = '';
+    };
+    r.readAsText(f);
+  });
+  $('#restoreBtn').addEventListener('click', function () {
+    store.set('qs.hidden', []);
+    render(); toast('Sample spots restored');
+  });
+
+  /* ---------- install as an app ---------- */
+  var deferredInstall = null;
+  var installBtn = $('#installBtn');
+  var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredInstall = e;
+    installBtn.hidden = false;
+  });
+  window.addEventListener('appinstalled', function () {
+    deferredInstall = null;
+    installBtn.hidden = true;
+    toast('Quiet Spot is installed');
+  });
+  if (isIOS && !standalone) installBtn.hidden = false;
+  installBtn.addEventListener('click', function () {
+    if (deferredInstall) {
+      deferredInstall.prompt();
+      deferredInstall.userChoice.then(function () { deferredInstall = null; installBtn.hidden = true; });
+    } else if (isIOS) {
+      toast('In Safari, tap Share, then Add to Home Screen');
+    }
+  });
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+
+  /* ---------- start ---------- */
+  buildCats();
+  drawLayers();
+
+  if (shared) {
+    $('#modeNote').textContent = 'This list is shared. Every student using the app sees the same places and the same averaged noise levels, and anyone can add a spot or a reading.';
+    $('#importBtn').hidden = true;
+    $('#restoreBtn').hidden = true;
+    $('#footNote').textContent = 'Quiet Spot is a shared list. Spots and readings you add are visible to everyone. Your saved spots, timer and sound settings stay on this device.';
+    var cached = store.get('qs.cache', null);
+    if (cached && cached.spots) {
+      remote.spots = cached.spots; remote.readings = cached.readings || {}; remote.flags = cached.flags || {};
+      remote.at = cached.at || 0; remote.loaded = true; remote.v = typeof cached.v === 'number' ? cached.v : -1;
+    }
+    $('#refreshBtn').addEventListener('click', function () { loadRemote(true); });
+    render();
+    startLiveSync();
+  } else {
+    $('#modeNote').textContent = 'The shared list is not switched on yet, so spots you add are saved on this device only. See SETUP.md to connect it.';
+    render();
+  }
+})();
+</script>
+</body>
+</html>
