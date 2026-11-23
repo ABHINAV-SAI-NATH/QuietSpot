@@ -1,125 +1,185 @@
-# Quiet Spot
+# QuietSpot v2.0 — P06: "A Seat to Study"
 
-> **Find your sanctuary of silence.**  
-> A lightweight, distraction-free web app for discovering tranquil study spaces, serene library nooks, and calm cafes, paired with a native Web Audio ambient sound generator and focus sprint timer.
-
----
-
-## Overview
-
-Modern environments are loud and overstimulating. **Quiet Spot** helps students, researchers, remote workers, and deep-thinkers locate low-noise sanctuaries in their area. In addition to a searchable directory of quiet spaces, Quiet Spot includes a built-in offline ambient sound generator and a focus sprint timer to help you maintain flow state wherever you work.
+> **Design Thinking & Innovation Project**  
+> **Course / Section:** K3P26HK &middot; **Project Code:** P06  
+> **Institution:** Lovely Professional University (LPU), Punjab, India  
+> **Focus Context:** LPU Central Library &amp; Academic Block 34 Study Spaces  
+> **Team G6:** Johan Samuel Reji &middot; Abhinav Sai Nath &middot; Diya &middot; Daksh Phartiyal  
+> **Deployment:** Pure static web app ready for instant GitHub Pages hosting (zero build tools, zero backend dependencies)
 
 ---
 
-## Key Features
+## 1. Executive Summary & Design Challenge
 
-### 1. Curated Quiet Spots Directory
-- **Category Filtering**: Explore locations by type — *Libraries & Archives*, *Calm Cafes & Tea Houses*, *Gardens & Courtyards*, *Soundproof Pods*, and *Bookstores*.
-- **Acoustic Decibel (dB) Ratings**: Each spot displays an estimated ambient sound level (e.g. `28 dB · Whisper Quiet`) accompanied by a visual decibel scale.
-- **Search & Filter**: Real-time search across location names, neighborhoods, descriptions, and amenity tags.
-- **Save Sanctuaries**: Bookmark spots to easily revisit your personalized favorites list, saved locally via `localStorage`.
+Modern university campus libraries face severe peak-hour congestion, acoustic friction, and territorial seat-reservation behaviors ("bag sprawling"). During our fieldwork at **Lovely Professional University (LPU)**, particularly following the 5:00 PM lecture dispersal, students frequently walk 15–20 minutes from residential hostels (e.g., BH-4, GH-1) only to find study tables occupied by unattended water bottles, jackets, and notebooks.
 
-### 2. Built-in Sound Sanctuary (Web Audio API)
-- **Zero External Audio Dependencies**: Ambient audio tracks are synthesized in real-time directly through the browser's native **Web Audio API** — no large audio files or network requests required.
-- **Synthesized Channels**:
-  - 🌧️ **Gentle Rain**: Filtered pink noise with randomized flutter curves.
-  - 〰️ **Pink Noise**: Paul Kellet filtered algorithm for balanced acoustic masking.
-  - 🍃 **Forest Breeze**: Bandpass-filtered resonant sweep modulated via low-frequency oscillators.
-  - 🧘 **Calm Drone (432Hz)**: Dual-harmonic soothing sine and triangle wave generator.
-- **Individual & Master Controls**: Per-sound volume sliders, active toggles, and a master volume control.
-
-### 3. Focus Sprint Timer
-- **Timed Sessions**: Preset options for 25-minute focus sprints (Pomodoro), 50-minute deep-work blocks, and 5-minute rest breaks.
-- **Live Tab Indicator**: Updates the browser tab title in real-time with remaining minutes and seconds.
-- **Ambient Chime Alert**: Plays a gentle 3-tone harmonic chime synthesized through Web Audio when the timer completes.
-
-### 4. Share & Recommend Sanctuaries
-- Accessible submission modal built on the native HTML `<dialog>` element.
-- Submit custom spots with name, category, noise level, location, and amenity checklists (Wi-Fi, outlets, daylight, quiet policy).
-- Newly added locations are immediately saved into your browser's `localStorage` and added to your directory.
-
-### 5. Adaptive Theming & Accessibility
-- **Automatic & Manual Theming**: Respects your OS color scheme (`light` / `dark`) by default, with an instant toggle button to force light or dark mode.
-- **FOUC Prevention**: Uses `<meta name="color-scheme" content="light dark">` and standard `color-scheme` declarations to prevent theme flash during page loads.
-- **Modern CSS Architecture**: Built using CSS Cascade Layers (`@layer reset, base, layout, components, utilities`) and standard `scrollbar-color`.
-- **Keyboard Navigation & Motion Respect**: Full `:focus-visible` ring indicators, `Esc` and light-dismiss support for dialogs, and `prefers-reduced-motion` optimizations.
+**QuietSpot v2.0** ("A Seat to Study") is a student-centered digital-physical service system that solves this challenge through:
+1. **Pre-Arrival 15-Minute Walk Holds**: Lock in an open quiet seat before leaving class or hostel.
+2. **Optical Desk QR Arrival Check-In**: Establish a verified single-occupant "Digital Desk Boundary" to eliminate bag reservation.
+3. **20-Minute Break Holds**: Fair-use seat protection for water and stretch breaks that auto-releases if unreturned.
+4. **100% Anonymous Quiet Alert Decorum Reporting**: Frictionless reporting of disruptions directly to floor staff without peer confrontation or identity exposure.
+5. **Offline Web Audio Sound Sanctuary & Focus Tools**: Real-time synthesized acoustic masking (rain, pink noise, wind, 432Hz calm drone) and a Pomodoro sprint timer running 100% locally.
 
 ---
 
-## Project Structure
+## 2. Design Thinking Process & Field Research Evidence
 
-```text
-QuietSpot/
-├── index.html     # Semantic HTML5 markup, accessible landmarks, and dialog
-├── styles.css     # Layered CSS styles, design tokens, light/dark themes
-├── app.js         # Reactive state, Web Audio synthesizer, and focus timer
-└── README.md      # Project documentation
+Our team executed the 5-stage Design Thinking methodology directly on the LPU campus:
+
+```
+[ EMPATHIZE ] ──> [ DEFINE ] ──> [ IDEATE ] ──> [ PROTOTYPE ] ──> [ TEST (CP6) ]
+  6 Student        Point-of-View    "Map & Hold"   v1.0 Static      v2.0 Usability
+  Interviews       Statements &     System & QR    Web App          Audit & 4 Core
+  & 2 Field Visits Personas         Verification                    Fixes (ISS 01-04)
 ```
 
-### File Breakdown
-
-| File | Purpose |
-| :--- | :--- |
-| **`index.html`** | Houses the semantic structure (`<header>`, `<main>`, `<section>`, `<article>`, `<dialog>`, `<footer>`), search bar, sound player layout, and SVG icons. |
-| **`styles.css`** | Encapsulates design tokens (`light-dark()`, CSS variables), cascade layers, responsive grid/flexbox layouts, dialog backdrop blur, and scrollbar rules. |
-| **`app.js`** | Handles spot filtering and search, bookmarks, modal interactions, `localStorage` synchronization, the `AmbientSoundEngine`, and Pomodoro clock logic. |
+### Primary Fieldwork & Student Interviews
+- **Interview #1 (B.Tech CSE, 3rd Year):** *"By 5:15 PM, 5th floor silent tables are completely covered with unattended notebooks. If you move someone's bottle to sit down, an argument breaks out."*
+- **Interview #2 (MBA, 2nd Year):** *"Our project groups need to discuss cases, but the 3 Discussion Rooms are black boxes—you only know if one is free by physically climbing stairs to check."*
+- **Interview #3 (B.Des, 4th Year):** *"I need a wall power socket because rendering drains my laptop battery in 45 minutes. Searching for open sockets wastes half my study break."*
+- **Interview #4 (Law Student):** *"Students take Zoom calls inside solo study cabins. Asking them to stop leads to hostility, and library guards aren't always stationed on every aisle."*
+- **Interview #5 & #6 (Hostel Residents):** Emphasized the walk time barrier (15 minutes from hostel blocks across campus) and fear of disciplinary repercussions if their student ID was attached to noise complaints.
+- **Field Observation #1 (Academic Block 34, 4:45 PM):** Dozens of students sitting on concrete staircases with laptops due to lack of real-time visibility into open study alcoves on upper floors.
 
 ---
 
-## Getting Started
+## 3. Student Personas
 
-Quiet Spot is completely static and client-side. There are **no build steps**, **no node dependencies**, and **no package installations required**.
+| Dimension | Primary Persona: **Aarav Sharma** | Secondary Persona: **Rohan Verma** |
+| :--- | :--- | :--- |
+| **Profile** | 3rd Year B.Tech CSE &middot; Resident (BH-4) | 2nd Year MBA &middot; Day Scholar / Commuter |
+| **Mindset** | Habit-driven deep focus seeker | Adaptable exam-week peer studier |
+| **Schedule** | 5:15 PM – 7:30 PM (Post-lecture rush) | Midday lecture gaps &amp; midterm sprint blocks |
+| **Primary Need** | Guaranteed seat with power socket ⚡ on 5th Floor | Fast visibility into Discussion Rooms (DR-01 to DR-03) |
+| **Pain Point** | Losing desks to bag reservation; wasted walk time | Climbing stairs only to find group study rooms locked or full |
+
+---
+
+## 4. CP6 v2.0 Usability Audit & Key Fixes
+
+During our Phase CP6 user evaluation sessions with LPU students, 4 key friction points were discovered and engineered out in QuietSpot v2.0:
+
+```
+┌─────────┬──────────────────────────────────┬─────────────────────────────────────────────────────────────┐
+│ Fix ID  │ User Friction Identified         │ Engineered v2.0 Solution                                    │
+├─────────┼──────────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│ ISS-01  │ Students tapped floor headers    │ Added high-contrast primary "Hold Best Quiet Seat — 15 Min" │
+│         │ expecting to hold a seat.        │ CTA buttons directly on every floor card header.            │
+├─────────┼──────────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│ ISS-02  │ Arrival QR check-in was buried   │ Elevated "Scan Desk QR" into a persistent top nav pill +    │
+│         │ in nested card menus.            │ mobile bottom nav bar with 1-tap viewfinder simulation.     │
+├─────────┼──────────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│ ISS-03  │ Students with dying laptops      │ Added a toggleable "⚡ Power Outlets Only" filter chip and  │
+│         │ couldn't spot socket desks.      │ explicit visual ⚡ socket badges on all interactive desks.   │
+├─────────┼──────────────────────────────────┼─────────────────────────────────────────────────────────────┤
+│ ISS-04  │ Fear of peer retaliation or      │ Implemented 100% Anonymous reporting with zero student ID,  │
+│         │ discipline on noise complaints.  │ email, or name fields, backed by a prominent trust banner.  │
+└─────────┴──────────────────────────────────┴─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5. System Architecture & Core Navigation Tabs
+
+### Tab 1: Map & Hold (Pre-Arrival Discovery)
+- **Campus KPI Telemetry Strip**: Real-time counter of total free quiet seats, open discussion rooms, quietest zone right now (5th floor · 34 dB), and post-5:00 PM rush alert.
+- **Search & Filter Toolbar**: Instant search by zone/floor, filter by "Strictly Silent", "Discussion Allowed", and "⚡ Power Outlets Only" (ISS-03), plus sorting by quietest dB or most open seats.
+- **Interactive Desk Grids**: Visual seat layouts with pulsing emerald badges for open desks, visual power socket markers, and 1-tap seat selection.
+- **15-Minute Walk Hold Modal**: Starts a live ticking countdown timer (15:00) with hostel-to-library walk protection.
+
+### Tab 2: Scan Desk QR (Arrival Verification)
+- **Optical Scanner Viewfinder**: Animated laser scanning bar, corner brackets, and 1-tap simulated QR code optical reader (ISS-02).
+- **Digital Desk Boundary**: Single-occupant seat lock that deters territorial bag reservation.
+- **20-Minute Break Hold**: Protected water/stretch break with automatic seat release if unreturned.
+- **Clean Check-Out Modal**: 3-point cleanliness hand-off (table clear, no trash/bottles left, chair pushed in).
+
+### Tab 3: Quiet Alert (Anonymous Decorum & Acoustic Tools)
+- **Mandatory Trust Banner**: "100% Anonymous — Zero Student Credentials Collected" (ISS-04).
+- **One-Tap Disruption Categories**:
+  1. *Loud Talking in Silent Zone* (prompts rerouting to open Discussion Rooms)
+  2. *Table / Bag Encroachment* (bag-sprawling deterrence)
+  3. *Cabin Video Filming / Calls*
+  4. *PDA / Visual Distraction*
+  5. *Leftover Bottles / Desk Litter*
+- **Recent Decorum Activity Feed**: Real-time log of supervisor dispatches and resolved reports.
+- **6-Second Live Browser Mic Meter**: Local RMS ambient acoustic sampling via Web Audio API (`getUserMedia`) with graceful simulated telemetry fallback.
+- **Library Noise Spectrum Guide**: 20–35 dB Whisper Silent, 36–44 dB Library Calm, 45–55 dB Discussion Zone.
+
+### Tab 4: My Routine (Personalization & Viva Inspector)
+- **Live Persona Switcher**: Instant toggle between Aarav Sharma and Rohan Verma for viva presentations.
+- **Silent Co-Study Mode**: Highlights desks near other quiet solo studiers to build community without conversation.
+- **Saved Favorite Sanctuaries**: Local bookmarking for quick floor access.
+- **Web Audio Sound Sanctuary**: 100% offline, procedural ambient generator:
+  - 🌧️ *Gentle Rain* (filtered pink noise with randomized flutter)
+  - 〰️ *Pink Noise* (Paul Kellet 6-pole filter algorithm)
+  - 🍃 *Forest Wind* (LFO-swept resonant bandpass filter)
+  - 🧘 *Calm Drone (432Hz)* (dual-harmonic pure sine/triangle wave generator)
+- **Focus Sprint Pomodoro Timer**: 25m focus, 50m deep work, 5m rest, with soothing 3-tone harmonic chime alerts.
+- **Evaluator Inspector Panel**: Collapsible research traceability drawer connecting features back to interviews and CP6 audit fixes.
+- **Reset Demo State Button**: Single-tap footer button to reset `localStorage` to clean state for live class evaluations.
+
+---
+
+## 6. Pre-Populated Realistic LPU Campus Spaces
+
+| Campus Zone | Noise Level | Type | Key Features |
+| :--- | :--- | :--- | :--- |
+| **Central Library — 5th Floor** | 34 dB (Whisper Silent) | Silent | 12 Desks (5F-A01 to 5F-C04), Corner Solo `5F-B04` ⚡, Strict Quiet Policy |
+| **Central Library — 4th Floor** | 38 dB (Library Calm) | Silent | 12 Desks (4F-A01 to 4F-B06), Reference Stacks, Natural Daylight |
+| **Central Library — 2nd Floor** | 42 dB (Gentle Murmur) | Solo Cabins | 8 Private Cabins (2F-CAB01 to 2F-CAB08), Thesis Drafting, Power Outlets |
+| **Central Library — Discussion Rooms** | 54 dB (Collaborative) | Group Zone | Discussion Rooms DR-01 (Open), DR-02 (Occupied), DR-03 (Open), Basement Hall |
+| **Academic Block 34 — Study Corners** | 46 dB (Gentle Murmur) | Overflow | 6 Desks/Alcoves (34-ALC01 to 34-ALC06), 2-min walk from lectures (prevents staircase study) |
+
+---
+
+## 7. Technology Stack & Modern Web Standards
+
+- **Markup:** Pure HTML5 with semantic landmarks (`<header>`, `<main>`, `<section>`, `<aside>`, `<dialog>`, `<footer>`), ARIA attributes, and SVG iconography.
+- **Styling:** CSS3 structured in Cascade Layers (`@layer reset, base, layout, components, utilities`), `light-dark()` tokens with `@media (prefers-color-scheme: dark)` fallback, standard `scrollbar-color`, and responsive Flexbox/Grid.
+- **Scripting:** Modern vanilla ES6+ JavaScript, `localStorage` persistence, and the native **Web Audio API** (`AudioContext`, `BiquadFilterNode`, `OscillatorNode`, `AudioBufferSourceNode`, `AnalyserNode`).
+- **Zero Dependencies:** No React, Vue, Tailwind, npm, Vite, or external build steps. Loads instantly and runs completely offline.
+
+---
+
+## 8. How to Run & Present
 
 ### Option 1: Direct in Browser
-Simply double-click or open `index.html` in any modern web browser:
+Simply open `index.html` in any web browser (Chrome, Edge, Firefox, Safari):
 ```bash
-# On Windows (PowerShell)
+# Windows
 start index.html
 
-# On macOS
+# macOS
 open index.html
 
-# On Linux
+# Linux
 xdg-open index.html
 ```
 
-### Option 2: Local HTTP Server (Recommended)
-If you prefer running through a local development server:
-
-Using **Python 3**:
+### Option 2: Local HTTP Server (Recommended for Live Demos)
 ```bash
+# Python 3
 python -m http.server 8000
 ```
-Then visit `http://localhost:8000` in your browser.
+Then navigate to `http://localhost:8000`.
 
-Using **Node.js**:
-```bash
-npx serve .
-```
-
----
-
-## Technical Specifications
-
-- **HTML**: Semantic HTML5, Native `<dialog>` with `closedby="any"` and light-dismiss fallback.
-- **CSS**: CSS Cascade Layers (`@layer`), CSS Custom Properties, `color-scheme: light dark`, `light-dark()` color tokens, logical properties (`padding-inline`, `margin-block`), and responsive grid layouts.
-- **JavaScript**: Modern ES6+ (vanilla), Web Audio API (`AudioContext`, `BiquadFilterNode`, `OscillatorNode`, `AudioBufferSourceNode`), and `localStorage` API.
-- **Browser Compatibility**: Chrome, Edge, Firefox, Safari (desktop and mobile).
+### Option 3: GitHub Pages Deployment
+1. Push this repository to GitHub.
+2. In repository settings, navigate to **Pages** &rarr; select branch **`main`** &rarr; root folder **`/`**.
+3. QuietSpot will be live on `https://<username>.github.io/QuietSpot/`.
 
 ---
 
-## Decibel Scale Reference
+## 9. Academic Project Credits
 
-Quiet Spot classifies locations according to sound pressure levels:
+**Lovely Professional University (LPU)**  
+*School of Computer Science and Engineering / Department of Design Thinking*  
+**Course Code:** K3P26HK &middot; **Project:** P06 — "A Seat to Study"  
 
-| Decibel Range | Classification | Ideal For |
-| :--- | :--- | :--- |
-| **20 – 30 dB** | *Whisper Solitude* | Intense analytical thought, meditation, deep coding, and writing. |
-| **30 – 42 dB** | *Library Calm* | Reading, structured research, drafting, and problem solving. |
-| **42 – 52 dB** | *Gentle Atmosphere* | Casual creative sketching, relaxed study sessions, and light coffeehouse collaboration. |
+**Team G6:**
+- **Johan Samuel Reji**
+- **Abhinav Sai Nath**
+- **Diya**
+- **Daksh Phartiyal**
 
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE) — free to use, modify, and distribute.
+*Evaluation Note:* For live viva presentations, tap the **"Reset Demo State"** button in the footer to restore default campus telemetry, open desks, and initial alerts.

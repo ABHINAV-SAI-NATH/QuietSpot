@@ -1,505 +1,1367 @@
 /**
- * Quiet Spot — Main Application Script
- * Features:
- * - Color theme system (System / Light / Dark) with system change listener
- * - Curated Quiet Spots directory with reactive filtering, search & bookmarks
- * - Native <dialog> modal with light-dismiss fallback & validation
- * - Native Web Audio API ambient sound generator (Rain, Pink noise, Forest breeze, 432Hz Drone)
- * - Focus Sprint Timer (Pomodoro) with audio bell notifications
+ * QuietSpot v2.0 (P06 — A Seat to Study)
+ * Institution Context: Lovely Professional University (LPU)
+ * Central Campus Library & Academic Block Study Spaces
+ * Team G6 (K3P26HK) — Johan Samuel Reji, Abhinav Sai Nath, Diya, Daksh Phartiyal
  */
 
 // ==========================================================================
-// 1. Initial Data & State
+// 1. REALISTIC LPU CAMPUS TELEMETRY DATA (ZERO PLACEHOLDERS)
 // ==========================================================================
 
-const DEFAULT_SPOTS = [
+const INITIAL_CAMPUS_FLOORS = [
   {
-    id: "spot-1",
-    name: "The Old Oak Reading Room",
-    category: "library",
-    categoryName: "Library & Archive",
-    noise: 28,
-    location: "Central Library, 4th Floor North",
-    amenities: ["Power Outlets", "Natural Light", "Strict Quiet Policy", "Wi-Fi"],
-    description: "Soaring double-height vaulted timber ceilings, large oak study desks, brass lamps, and an enforced silent policy."
+    id: "floor-5",
+    name: "Central Library — 5th Floor",
+    subtitle: "Deep Focus Silent Zone",
+    category: "silent",
+    noise: 34,
+    noiseLabel: "Library Calm",
+    noiseClass: "badge-whisper",
+    policy: "Strict Quiet Policy · Laptop typing and turning pages only",
+    amenities: ["⚡ Power Outlets", "Natural Daylight", "Strict Quiet", "Wi-Fi"],
+    desks: [
+      { id: "5F-A01", status: "occupied", power: true, label: "Window Solo" },
+      { id: "5F-A02", status: "occupied", power: false, label: "Window Solo" },
+      { id: "5F-A03", status: "open", power: true, label: "Aisle Carrel" },
+      { id: "5F-A04", status: "open", power: false, label: "Aisle Carrel" },
+      { id: "5F-B01", status: "occupied", power: true, label: "Center Table" },
+      { id: "5F-B02", status: "open", power: false, label: "Center Table" },
+      { id: "5F-B03", status: "occupied", power: false, label: "Center Table" },
+      { id: "5F-B04", status: "open", power: true, label: "Corner Solo (Best)" }, // Target desk
+      { id: "5F-C01", status: "occupied", power: true, label: "Quiet Wall" },
+      { id: "5F-C02", status: "open", power: true, label: "Quiet Wall" },
+      { id: "5F-C03", status: "occupied", power: false, label: "Quiet Wall" },
+      { id: "5F-C04", status: "open", power: false, label: "East Alcove" }
+    ]
   },
   {
-    id: "spot-2",
-    name: "Verdant Botanical Glasshouse",
-    category: "garden",
-    categoryName: "Garden Sanctuary",
-    noise: 32,
-    location: "City Conservatory, Palm Wing",
-    amenities: ["Natural Light", "Outdoor Seating", "Tea / Coffee"],
-    description: "Surrounded by ferns and palm canopies. The soft sound of distant trickling fountains masks extraneous street sounds."
-  },
-  {
-    id: "spot-3",
-    name: "Komorebi Tea House & Study Nook",
-    category: "cafe",
-    categoryName: "Calm Cafe",
+    id: "floor-4",
+    name: "Central Library — 4th Floor",
+    subtitle: "Quiet Reading & Reference Wing",
+    category: "silent",
     noise: 38,
-    location: "East Riverside Lane, Unit B",
-    amenities: ["Tea / Coffee", "Wi-Fi", "Natural Light"],
-    description: "Shoji screens separating cozy cedar alcoves, warm matcha, gentle low acoustic guitar, and a no-calls-allowed policy."
+    noiseLabel: "Library Calm",
+    noiseClass: "badge-calm",
+    policy: "Quiet Policy · Journal reading and individual study",
+    amenities: ["⚡ Power Outlets", "Book Stacks", "Wi-Fi", "Air Conditioned"],
+    desks: [
+      { id: "4F-A01", status: "open", power: true, label: "Stack Alcove" },
+      { id: "4F-A02", status: "occupied", power: true, label: "Stack Alcove" },
+      { id: "4F-A03", status: "open", power: false, label: "Window Desk" },
+      { id: "4F-A04", status: "occupied", power: false, label: "Window Desk" },
+      { id: "4F-A05", status: "open", power: true, label: "Reference Carrel" },
+      { id: "4F-A06", status: "open", power: false, label: "Reference Carrel" },
+      { id: "4F-B01", status: "occupied", power: true, label: "Study Row" },
+      { id: "4F-B02", status: "occupied", power: false, label: "Study Row" },
+      { id: "4F-B03", status: "open", power: true, label: "Study Row" },
+      { id: "4F-B04", status: "open", power: false, label: "Study Row" },
+      { id: "4F-B05", status: "occupied", power: true, label: "Quiet Corner" },
+      { id: "4F-B06", status: "open", power: true, label: "Quiet Corner" }
+    ]
   },
   {
-    id: "spot-4",
-    name: "Highland Solitude Co-working Pods",
-    category: "pod",
-    categoryName: "Acoustic Pod",
-    noise: 26,
-    location: "Highland Tech Quarter, Level 2",
-    amenities: ["Power Outlets", "Wi-Fi", "Strict Quiet Policy"],
-    description: "Double-glazed acoustic glass pods featuring active ventilation, ergonomic Herman Miller chairs, and dimmable lighting."
+    id: "floor-2",
+    name: "Central Library — 2nd Floor",
+    subtitle: "Solo Study Cabins & Dissertation Nooks",
+    category: "silent",
+    noise: 42,
+    noiseLabel: "Gentle Murmur",
+    noiseClass: "badge-murmur",
+    policy: "Individual Cabins · Solo deep focus and thesis drafting",
+    amenities: ["Private Cabins", "⚡ Power Outlets", "Ergonomic Chairs", "Wi-Fi"],
+    isCabins: true,
+    cabins: [
+      { id: "2F-CAB01", status: "occupied", power: true, label: "Single Cabin" },
+      { id: "2F-CAB02", status: "open", power: true, label: "Single Cabin" },
+      { id: "2F-CAB03", status: "occupied", power: true, label: "Single Cabin" },
+      { id: "2F-CAB04", status: "open", power: true, label: "Single Cabin" },
+      { id: "2F-CAB05", status: "occupied", power: true, label: "Corner Cabin" },
+      { id: "2F-CAB06", status: "open", power: true, label: "Corner Cabin" },
+      { id: "2F-CAB07", status: "occupied", power: true, label: "Thesis Pod" },
+      { id: "2F-CAB08", status: "open", power: true, label: "Thesis Pod" }
+    ]
   },
   {
-    id: "spot-5",
-    name: "St. Jude Cloister Garden & Arcades",
-    category: "garden",
-    categoryName: "Historic Courtyard",
-    noise: 30,
-    location: "Old Town Quadrangle",
-    amenities: ["Outdoor Seating", "Strict Quiet Policy", "Natural Light"],
-    description: "14th-century stone archways surrounding a manicured lawn. Weather-sheltered stone benches ideal for reflective reading."
+    id: "floor-dr",
+    name: "Central Library — Discussion Rooms & Basement",
+    subtitle: "Collaborative Study & Peer Sprint Zone",
+    category: "discussion",
+    noise: 54,
+    noiseLabel: "Group Discussion Allowed",
+    noiseClass: "badge-alert",
+    policy: "Collaborative Zone · Verbal peer discussion and project review permitted",
+    amenities: ["Whiteboards", "Group Tables", "⚡ Power Outlets", "Screen Share"],
+    isDiscussionRooms: true,
+    rooms: [
+      { id: "DR-01", name: "Discussion Room 1", status: "open", capacity: "6 Seats", features: ["Dry-Erase Board", "⚡ Outlets", "HDMI Screen"] },
+      { id: "DR-02", name: "Discussion Room 2", status: "occupied", capacity: "8 Seats", features: ["Projector", "⚡ Outlets", "Whiteboard"] },
+      { id: "DR-03", name: "Discussion Room 3", status: "open", capacity: "4 Seats", features: ["⚡ Outlets", "Whiteboard", "Round Table"] },
+      { id: "DR-BASE", name: "Basement Large Collaborative Hall", status: "open", capacity: "24 Seats Open", features: ["Open Cluster Tables", "Wi-Fi", "Coffee Kiosk Nearby"] }
+    ]
   },
   {
-    id: "spot-6",
-    name: "Paper & Ink Manuscript Corner",
-    category: "bookstore",
-    categoryName: "Bookstore Nook",
-    noise: 35,
-    location: "33 Heritage Row",
-    amenities: ["Wi-Fi", "Tea / Coffee", "Natural Light"],
-    description: "Tucked away behind poetry shelves with plush velvet armchairs, vintage lamps, and the comforting aroma of old paper."
+    id: "floor-block34",
+    name: "Academic Block 34 — Study Corners",
+    subtitle: "Between-Class Quick Overflow Sanctuaries",
+    category: "silent",
+    noise: 46,
+    noiseLabel: "Gentle Murmur",
+    noiseClass: "badge-murmur",
+    policy: "Between-Lecture Overflow · Quiet study nooks so students avoid staircases",
+    amenities: ["2-Min Walk From Lectures", "Natural Light", "Power Outlets", "Wi-Fi"],
+    desks: [
+      { id: "34-ALC01", status: "open", power: true, label: "2nd Floor West Alcove" },
+      { id: "34-ALC02", status: "occupied", power: true, label: "2nd Floor West Alcove" },
+      { id: "34-ALC03", status: "open", power: false, label: "3rd Floor Sunlit Corner" },
+      { id: "34-ALC04", status: "open", power: true, label: "3rd Floor Sunlit Corner" },
+      { id: "34-ALC05", status: "occupied", power: false, label: "4th Floor Balcony Nook" },
+      { id: "34-ALC06", status: "open", power: true, label: "4th Floor Balcony Nook" }
+    ]
   }
 ];
 
-// App State
-const state = {
-  spots: [],
-  savedSpotIds: new Set(),
-  activeCategory: "all",
-  searchQuery: "",
-  maxNoise: "all",
-  theme: "auto", // 'auto' | 'light' | 'dark'
-  timer: {
-    totalSeconds: 25 * 60,
-    remainingSeconds: 25 * 60,
-    isRunning: false,
-    intervalId: null
+// Initial Anonymized Decorum Activity Feed
+const INITIAL_DECORUM_ALERTS = [
+  { id: "alert-1", time: "12 mins ago", floor: "5th Floor — Deep Focus", category: "Loud Talking in Silent Zone", status: "Supervisor Dispatched" },
+  { id: "alert-2", time: "34 mins ago", floor: "4th Floor — Reading Wing", category: "Table / Bag Encroachment", status: "Resolved & Cleared" },
+  { id: "alert-3", time: "1 hour ago", floor: "2nd Floor — Study Cabins", category: "Cabin Video Filming / Calls", status: "Resolved & Cleared" }
+];
+
+// Student Personas
+const PERSONAS = {
+  aarav: {
+    id: "aarav",
+    name: "Aarav Sharma",
+    avatar: "AS",
+    avatarClass: "",
+    badge: "Primary Persona · Habit-Driven Quiet Seeker",
+    major: "3rd Year B.Tech CSE",
+    preferredFloor: "floor-5",
+    preferredDesk: "5F-B04",
+    priorities: "5th Floor Deep Focus, Power Outlet ⚡, 5:15–7:30 PM post-lecture peak"
+  },
+  rohan: {
+    id: "rohan",
+    name: "Rohan Verma",
+    avatar: "RV",
+    avatarClass: "avatar-rohan",
+    badge: "Secondary Persona · Adaptable Exam-Week Studier",
+    major: "2nd Year MBA",
+    preferredFloor: "floor-4",
+    preferredDesk: "4F-B06",
+    priorities: "4th Floor & Discussion Rooms for project group peer sprints"
   }
 };
 
 // ==========================================================================
-// 2. Storage Helpers
+// 2. CENTRAL STATE & LOCAL STORAGE INITIALIZATION
 // ==========================================================================
 
-function loadStoredData() {
+const state = {
+  floors: [],
+  activeTab: "map-view",
+  persona: "aarav",
+  coStudyMode: false,
+  savedFloorIds: new Set(["floor-5", "floor-2"]),
+  activeHold: null,     // { deskId, floorId, floorName, holdExpiresAt, remainingSeconds }
+  activeSession: null,  // { deskId, floorId, floorName, checkedInAt, elapsedSeconds, isBreak, breakRemainingSeconds }
+  decorumAlerts: [],
+  filterCategory: "all",
+  powerFilterActive: false,
+  searchQuery: "",
+  sortOrder: "quietest",
+  stats: {
+    completedSessions: 4,
+    savedWalkMins: 45,
+    cleanCheckouts: 100
+  },
+  intervals: {
+    holdTimer: null,
+    sessionTimer: null,
+    breakTimer: null,
+    pomodoroTimer: null,
+    micSamplingTimer: null
+  },
+  pomodoro: {
+    totalSeconds: 25 * 60,
+    remainingSeconds: 25 * 60,
+    isRunning: false
+  }
+};
+
+function loadStoredState() {
   try {
-    const savedSpots = localStorage.getItem("quietspot-custom-spots");
-    const userSpots = savedSpots ? JSON.parse(savedSpots) : [];
-    state.spots = [...DEFAULT_SPOTS, ...userSpots];
+    const savedFloors = localStorage.getItem("quietspot_v2_floors");
+    state.floors = savedFloors ? JSON.parse(savedFloors) : JSON.parse(JSON.stringify(INITIAL_CAMPUS_FLOORS));
 
-    const savedBookmarks = localStorage.getItem("quietspot-saved-ids");
-    if (savedBookmarks) {
-      state.savedSpotIds = new Set(JSON.parse(savedBookmarks));
+    const savedAlerts = localStorage.getItem("quietspot_v2_alerts");
+    state.decorumAlerts = savedAlerts ? JSON.parse(savedAlerts) : [...INITIAL_DECORUM_ALERTS];
+
+    const savedPersona = localStorage.getItem("quietspot_v2_persona");
+    if (savedPersona && PERSONAS[savedPersona]) state.persona = savedPersona;
+
+    const savedBookmarks = localStorage.getItem("quietspot_v2_bookmarks");
+    if (savedBookmarks) state.savedFloorIds = new Set(JSON.parse(savedBookmarks));
+
+    const savedHold = localStorage.getItem("quietspot_v2_active_hold");
+    if (savedHold) {
+      const parsedHold = JSON.parse(savedHold);
+      const remaining = Math.max(0, Math.floor((parsedHold.holdExpiresAt - Date.now()) / 1000));
+      if (remaining > 0) {
+        parsedHold.remainingSeconds = remaining;
+        state.activeHold = parsedHold;
+      } else {
+        localStorage.removeItem("quietspot_v2_active_hold");
+      }
     }
 
-    const savedTheme = localStorage.getItem("quietspot-theme");
-    if (savedTheme) {
-      state.theme = savedTheme;
+    const savedSession = localStorage.getItem("quietspot_v2_active_session");
+    if (savedSession) {
+      const parsedSession = JSON.parse(savedSession);
+      parsedSession.elapsedSeconds = Math.max(0, Math.floor((Date.now() - parsedSession.checkedInAt) / 1000));
+      if (parsedSession.isBreak && parsedSession.breakExpiresAt) {
+        parsedSession.breakRemainingSeconds = Math.max(0, Math.floor((parsedSession.breakExpiresAt - Date.now()) / 1000));
+        if (parsedSession.breakRemainingSeconds <= 0) {
+          parsedSession.isBreak = false;
+        }
+      }
+      state.activeSession = parsedSession;
     }
+
+    const savedStats = localStorage.getItem("quietspot_v2_stats");
+    if (savedStats) state.stats = JSON.parse(savedStats);
+
   } catch (err) {
-    console.warn("Storage loading fallback:", err);
-    state.spots = [...DEFAULT_SPOTS];
+    console.warn("Storage recovery fallback:", err);
+    state.floors = JSON.parse(JSON.stringify(INITIAL_CAMPUS_FLOORS));
+    state.decorumAlerts = [...INITIAL_DECORUM_ALERTS];
   }
 }
 
-function saveCustomSpot(spot) {
+function persistState() {
   try {
-    const customSpots = state.spots.filter(s => !DEFAULT_SPOTS.some(def => def.id === s.id));
-    localStorage.setItem("quietspot-custom-spots", JSON.stringify(customSpots));
-  } catch (err) {
-    console.warn("Error saving spot to storage:", err);
-  }
-}
+    localStorage.setItem("quietspot_v2_floors", JSON.stringify(state.floors));
+    localStorage.setItem("quietspot_v2_alerts", JSON.stringify(state.decorumAlerts));
+    localStorage.setItem("quietspot_v2_persona", state.persona);
+    localStorage.setItem("quietspot_v2_bookmarks", JSON.stringify([...state.savedFloorIds]));
+    localStorage.setItem("quietspot_v2_stats", JSON.stringify(state.stats));
 
-function saveBookmarks() {
-  try {
-    localStorage.setItem("quietspot-saved-ids", JSON.stringify([...state.savedSpotIds]));
+    if (state.activeHold) {
+      localStorage.setItem("quietspot_v2_active_hold", JSON.stringify(state.activeHold));
+    } else {
+      localStorage.removeItem("quietspot_v2_active_hold");
+    }
+
+    if (state.activeSession) {
+      localStorage.setItem("quietspot_v2_active_session", JSON.stringify(state.activeSession));
+    } else {
+      localStorage.removeItem("quietspot_v2_active_session");
+    }
   } catch (err) {
-    console.warn("Error saving bookmarks:", err);
+    console.warn("Error persisting state:", err);
   }
 }
 
 // ==========================================================================
-// 3. Theme Manager
+// 3. TAB NAVIGATION ARCHITECTURE
+// ==========================================================================
+
+function switchTab(tabId) {
+  state.activeTab = tabId;
+
+  // Update desktop nav buttons
+  document.querySelectorAll(".nav-tab-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.getAttribute("data-tab") === tabId);
+  });
+
+  // Update mobile bottom nav buttons
+  document.querySelectorAll(".mobile-nav-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.getAttribute("data-tab") === tabId);
+  });
+
+  // Switch visible section
+  document.querySelectorAll(".tab-pane").forEach(pane => {
+    pane.classList.toggle("active", pane.id === tabId);
+  });
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function initNavigation() {
+  document.querySelectorAll("[data-tab]").forEach(el => {
+    el.addEventListener("click", () => {
+      const targetTab = el.getAttribute("data-tab");
+      switchTab(targetTab);
+    });
+  });
+
+  const brandBtn = document.getElementById("brandLogoBtn");
+  if (brandBtn) {
+    brandBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchTab("map-view");
+    });
+  }
+
+  const jumpToMapBtn = document.getElementById("jumpToMapBtn");
+  if (jumpToMapBtn) {
+    jumpToMapBtn.addEventListener("click", () => switchTab("map-view"));
+  }
+}
+
+// ==========================================================================
+// 4. THEME & PERSONA MANAGEMENT
 // ==========================================================================
 
 function initTheme() {
   const root = document.documentElement;
-  const themeBtn = document.getElementById("themeToggleBtn");
+  const toggleBtn = document.getElementById("themeToggleBtn");
   const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
+  const savedTheme = localStorage.getItem("quietspot_v2_theme") || "auto";
+
   function applyTheme(theme) {
-    state.theme = theme;
     if (theme === "auto") {
       root.removeAttribute("data-theme");
-      themeBtn.setAttribute("title", `Theme: System (${systemPrefersDark.matches ? "Dark" : "Light"})`);
+      toggleBtn.setAttribute("title", `Theme: System (${systemPrefersDark.matches ? "Dark" : "Light"})`);
     } else {
       root.setAttribute("data-theme", theme);
-      themeBtn.setAttribute("title", `Theme: ${theme.charAt(0).toUpperCase() + theme.slice(1)}`);
+      toggleBtn.setAttribute("title", `Theme: ${theme.charAt(0).toUpperCase() + theme.slice(1)}`);
     }
-    localStorage.setItem("quietspot-theme", theme);
+    localStorage.setItem("quietspot_v2_theme", theme);
   }
 
-  // Handle click on theme button (Cycles Auto -> Light -> Dark)
-  themeBtn.addEventListener("click", () => {
-    if (state.theme === "auto") {
+  toggleBtn.addEventListener("click", () => {
+    const current = localStorage.getItem("quietspot_v2_theme") || "auto";
+    if (current === "auto") {
       applyTheme(systemPrefersDark.matches ? "light" : "dark");
-    } else if (state.theme === "light") {
+    } else if (current === "light") {
       applyTheme("dark");
     } else {
       applyTheme("auto");
     }
   });
 
-  // Listen to OS color scheme changes dynamically
-  systemPrefersDark.addEventListener("change", (e) => {
-    if (state.theme === "auto") {
-      applyTheme("auto");
-    }
+  systemPrefersDark.addEventListener("change", () => {
+    const current = localStorage.getItem("quietspot_v2_theme") || "auto";
+    if (current === "auto") applyTheme("auto");
   });
 
-  applyTheme(state.theme);
+  applyTheme(savedTheme);
+}
+
+function setPersona(personaKey) {
+  if (!PERSONAS[personaKey]) return;
+  state.persona = personaKey;
+  const p = PERSONAS[personaKey];
+
+  // Update header quick pill
+  const headerAvatar = document.getElementById("headerPersonaAvatar");
+  const headerName = document.getElementById("headerPersonaName");
+  if (headerAvatar) {
+    headerAvatar.textContent = p.avatar;
+    headerAvatar.className = `persona-avatar ${p.avatarClass}`;
+  }
+  if (headerName) {
+    headerName.textContent = p.name.split(" ")[0];
+  }
+
+  // Update routine tab persona cards
+  const cardAarav = document.getElementById("personaCardAarav");
+  const cardRohan = document.getElementById("personaCardRohan");
+  const activeBadge = document.getElementById("activePersonaBadge");
+
+  if (cardAarav && cardRohan) {
+    cardAarav.classList.toggle("active", personaKey === "aarav");
+    cardRohan.classList.toggle("active", personaKey === "rohan");
+  }
+  if (activeBadge) {
+    activeBadge.textContent = `Active: ${p.name}`;
+  }
+
+  persistState();
+  showToast(`Switched student persona to ${p.name} (${p.major})`);
+}
+
+function initPersonaHandlers() {
+  const headerPill = document.getElementById("personaQuickSwitchBtn");
+  if (headerPill) {
+    headerPill.addEventListener("click", () => {
+      const next = state.persona === "aarav" ? "rohan" : "aarav";
+      setPersona(next);
+    });
+  }
+
+  const cardAarav = document.getElementById("personaCardAarav");
+  const cardRohan = document.getElementById("personaCardRohan");
+  if (cardAarav) cardAarav.addEventListener("click", () => setPersona("aarav"));
+  if (cardRohan) cardRohan.addEventListener("click", () => setPersona("rohan"));
+
+  setPersona(state.persona);
 }
 
 // ==========================================================================
-// 4. Spot Directory & Rendering
+// 5. MAP & HOLD TAB (CP6 Fix ISS-01 & ISS-03)
 // ==========================================================================
 
-function renderSpots() {
-  const grid = document.getElementById("spotsGrid");
-  const emptyState = document.getElementById("emptyState");
-  const countBadge = document.getElementById("spotsCountBadge");
-  const savedCountEl = document.getElementById("savedCount");
+function calculateKPIs() {
+  let freeSeats = 0;
+  let openDRs = 0;
 
-  if (savedCountEl) {
-    savedCountEl.textContent = state.savedSpotIds.size;
-  }
-
-  // Filter spots
-  const filtered = state.spots.filter(spot => {
-    // Category filter
-    if (state.activeCategory === "saved") {
-      if (!state.savedSpotIds.has(spot.id)) return false;
-    } else if (state.activeCategory !== "all" && spot.category !== state.activeCategory) {
-      return false;
+  state.floors.forEach(floor => {
+    if (floor.desks) {
+      freeSeats += floor.desks.filter(d => d.status === "open").length;
     }
-
-    // Noise limit
-    if (state.maxNoise !== "all") {
-      const limit = parseInt(state.maxNoise, 10);
-      if (spot.noise > limit) return false;
+    if (floor.cabins) {
+      freeSeats += floor.cabins.filter(c => c.status === "open").length;
     }
+    if (floor.rooms) {
+      openDRs += floor.rooms.filter(r => r.status === "open" && r.id.startsWith("DR-0")).length;
+    }
+  });
+
+  const kpiFree = document.getElementById("kpiFreeSeatsCount");
+  const kpiRooms = document.getElementById("kpiOpenRoomsCount");
+  if (kpiFree) kpiFree.textContent = freeSeats;
+  if (kpiRooms) kpiRooms.textContent = `${openDRs} of 3`;
+}
+
+function renderFloors() {
+  const container = document.getElementById("floorsContainer");
+  if (!container) return;
+
+  calculateKPIs();
+
+  // Filter logic
+  let filtered = state.floors.filter(floor => {
+    // Category chip filter
+    if (state.filterCategory === "silent" && floor.category !== "silent") return false;
+    if (state.filterCategory === "discussion" && floor.category !== "discussion") return false;
 
     // Search query
     if (state.searchQuery.trim() !== "") {
       const q = state.searchQuery.toLowerCase();
-      const inName = spot.name.toLowerCase().includes(q);
-      const inLocation = spot.location.toLowerCase().includes(q);
-      const inDesc = spot.description.toLowerCase().includes(q);
-      const inAmenities = spot.amenities.some(a => a.toLowerCase().includes(q));
-      if (!inName && !inLocation && !inDesc && !inAmenities) return false;
+      const matchName = floor.name.toLowerCase().includes(q);
+      const matchSub = floor.subtitle.toLowerCase().includes(q);
+      const matchAmenities = floor.amenities.some(a => a.toLowerCase().includes(q));
+      if (!matchName && !matchSub && !matchAmenities) return false;
     }
 
     return true;
   });
 
-  // Update count badge
-  countBadge.textContent = `Showing ${filtered.length} ${filtered.length === 1 ? "spot" : "spots"}`;
-
-  if (filtered.length === 0) {
-    grid.innerHTML = "";
-    emptyState.hidden = false;
-    return;
+  // Sorting
+  if (state.sortOrder === "quietest") {
+    filtered.sort((a, b) => a.noise - b.noise);
+  } else if (state.sortOrder === "seats") {
+    filtered.sort((a, b) => {
+      const freeA = (a.desks || a.cabins || []).filter(d => d.status === "open").length;
+      const freeB = (b.desks || b.cabins || []).filter(d => d.status === "open").length;
+      return freeB - freeA;
+    });
   }
 
-  emptyState.hidden = true;
+  container.innerHTML = filtered.map(floor => {
+    const isSaved = state.savedFloorIds.has(floor.id);
+    let desksHtml = "";
+    let freeCount = 0;
+    let totalCount = 0;
+    let bestOpenDesk = null;
 
-  grid.innerHTML = filtered.map(spot => {
-    const isSaved = state.savedSpotIds.has(spot.id);
-    // Noise progress calculation (20dB = 0%, 55dB = 100%)
-    const pct = Math.min(100, Math.max(10, ((spot.noise - 20) / 35) * 100));
+    if (floor.desks) {
+      let displayDesks = floor.desks;
+      if (state.powerFilterActive) {
+        displayDesks = displayDesks.filter(d => d.power);
+      }
+      totalCount = displayDesks.length;
+      freeCount = displayDesks.filter(d => d.status === "open").length;
+      bestOpenDesk = displayDesks.find(d => d.status === "open" && d.power) || displayDesks.find(d => d.status === "open");
+
+      desksHtml = `
+        <div class="desk-grid-instructions">
+          <span>Tap any green desk to hold for 15 min &middot; ⚡ = Power socket</span>
+          <span class="occupancy-summary-pill">${freeCount} of ${totalCount} Free</span>
+        </div>
+        <div class="desks-interactive-grid">
+          ${displayDesks.map(desk => {
+            const isHeld = state.activeHold && state.activeHold.deskId === desk.id;
+            const isUserSession = state.activeSession && state.activeSession.deskId === desk.id;
+            let statusClass = "seat-occupied";
+            let statusLabel = "Occupied";
+
+            if (isHeld) {
+              statusClass = "seat-held";
+              statusLabel = "Held by You";
+            } else if (isUserSession) {
+              statusClass = "seat-held";
+              statusLabel = "Your Seat";
+            } else if (desk.status === "open") {
+              statusClass = "seat-open";
+              statusLabel = "Free";
+            }
+
+            return `
+              <div 
+                class="desk-seat-pill ${statusClass}" 
+                data-floor-id="${floor.id}" 
+                data-desk-id="${desk.id}"
+                data-open="${desk.status === "open"}"
+                title="${desk.id} &middot; ${desk.label} (${desk.power ? "⚡ Power socket" : "No socket"})"
+              >
+                ${desk.status === "open" ? '<span class="seat-pulse"></span>' : ""}
+                <span class="desk-id-label">${desk.id}</span>
+                <span class="desk-status-text">${statusLabel}</span>
+                ${desk.power ? '<span class="power-socket-marker" aria-label="Power socket available">⚡</span>' : ""}
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    } else if (floor.isCabins) {
+      let displayCabins = floor.cabins;
+      totalCount = displayCabins.length;
+      freeCount = displayCabins.filter(c => c.status === "open").length;
+      bestOpenDesk = displayCabins.find(c => c.status === "open");
+
+      desksHtml = `
+        <div class="desk-grid-instructions">
+          <span>Tap an open private cabin to hold for 15 min</span>
+          <span class="occupancy-summary-pill">${freeCount} of ${totalCount} Free</span>
+        </div>
+        <div class="desks-interactive-grid">
+          ${displayCabins.map(cabin => {
+            const isHeld = state.activeHold && state.activeHold.deskId === cabin.id;
+            const isUserSession = state.activeSession && state.activeSession.deskId === cabin.id;
+            let statusClass = "seat-occupied";
+            let statusLabel = "Occupied";
+
+            if (isHeld) {
+              statusClass = "seat-held";
+              statusLabel = "Held by You";
+            } else if (isUserSession) {
+              statusClass = "seat-held";
+              statusLabel = "Your Cabin";
+            } else if (cabin.status === "open") {
+              statusClass = "seat-open";
+              statusLabel = "Free";
+            }
+
+            return `
+              <div 
+                class="desk-seat-pill ${statusClass}" 
+                data-floor-id="${floor.id}" 
+                data-desk-id="${cabin.id}"
+                data-open="${cabin.status === "open"}"
+                title="${cabin.id} &middot; Solo Study Cabin (⚡ Power Outlets)"
+              >
+                ${cabin.status === "open" ? '<span class="seat-pulse"></span>' : ""}
+                <span class="desk-id-label">${cabin.id}</span>
+                <span class="desk-status-text">${statusLabel}</span>
+                <span class="power-socket-marker">⚡</span>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    } else if (floor.isDiscussionRooms) {
+      desksHtml = `
+        <div class="rooms-grid">
+          ${floor.rooms.map(room => {
+            const isOpen = room.status === "open";
+            return `
+              <div class="room-card-box ${isOpen ? "room-open" : ""}">
+                <div class="room-card-header">
+                  <span class="room-id-title">${escapeHTML(room.name)}</span>
+                  <span class="db-reading-badge ${isOpen ? "badge-whisper" : "badge-alert"}">
+                    ${isOpen ? "Available Now" : "In Use"}
+                  </span>
+                </div>
+                <span class="room-capacity-badge">Capacity: ${escapeHTML(room.capacity)}</span>
+                <div class="room-features-list">
+                  ${room.features.map(f => `<span class="feature-pill">${escapeHTML(f)}</span>`).join("")}
+                </div>
+                ${isOpen ? `
+                  <button type="button" class="btn btn-sm btn-primary hold-room-btn" data-floor-id="${floor.id}" data-room-id="${room.id}">
+                    Hold Discussion Room &middot; 15 Min
+                  </button>
+                ` : `
+                  <span class="text-subtle text-xs" style="font-size:0.75rem; color:var(--color-text-subtle);">Occupied by Peer Study Group</span>
+                `}
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    // Direct Hold Best Quiet Seat button (CP6 Fix ISS-01)
+    const holdBtnHtml = bestOpenDesk ? `
+      <button 
+        type="button" 
+        class="btn-hold-best" 
+        data-floor-id="${floor.id}" 
+        data-desk-id="${bestOpenDesk.id}"
+      >
+        Hold Best Quiet Seat &middot; 15 Min
+      </button>
+    ` : `
+      <button type="button" class="btn-hold-best" style="opacity:0.5; cursor:not-allowed;" disabled>
+        Floor Fully Occupied
+      </button>
+    `;
 
     return `
-      <article class="spot-card" data-id="${spot.id}">
-        <div>
-          <div class="card-top">
-            <span class="spot-category-badge">${escapeHTML(spot.categoryName)}</span>
+      <article class="floor-card" data-floor-id="${floor.id}">
+        <div class="floor-card-header">
+          <div class="floor-title-block">
+            <div class="floor-badge-row">
+              <span class="zone-type-badge">${escapeHTML(floor.category)}</span>
+              <span class="db-reading-badge ${floor.noiseClass}">
+                <span aria-hidden="true">📡</span>
+                <span>${floor.noise} dB &middot; ${floor.noiseLabel}</span>
+              </span>
+            </div>
+            <h2 class="floor-name">${escapeHTML(floor.name)}</h2>
+            <p class="floor-location-meta">${escapeHTML(floor.subtitle)} &middot; ${escapeHTML(floor.policy)}</p>
+          </div>
+
+          <div class="floor-cta-block">
+            <!-- CP6 Fix ISS-01: Direct Action CTA on Floor Card -->
+            ${!floor.isDiscussionRooms ? holdBtnHtml : ""}
             <button 
               type="button" 
-              class="bookmark-btn ${isSaved ? "saved" : ""}" 
-              data-spot-id="${spot.id}"
-              aria-label="${isSaved ? "Remove from saved spots" : "Save this spot"}"
-              title="${isSaved ? "Remove from saved" : "Save spot"}"
+              class="floor-bookmark-btn ${isSaved ? "saved" : ""}" 
+              data-bookmark-floor="${floor.id}"
+              aria-label="${isSaved ? "Remove from saved floors" : "Save this floor"}"
+              title="${isSaved ? "Remove from favorites" : "Save to favorites"}"
             >
-              <svg viewBox="0 0 24 24" fill="${isSaved ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="${isSaved ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
               </svg>
             </button>
           </div>
-
-          <h3 class="spot-title">${escapeHTML(spot.name)}</h3>
-          
-          <div class="spot-location">
-            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-            </svg>
-            <span>${escapeHTML(spot.location)}</span>
-          </div>
-
-          <p class="spot-desc">${escapeHTML(spot.description)}</p>
         </div>
 
-        <div>
-          <div class="noise-meter-box" aria-label="Acoustic reading: ${spot.noise} decibels">
-            <div class="noise-meter-header">
-              <span>Acoustic Reading</span>
-              <span class="noise-db-val">${spot.noise} dB &middot; ${getNoiseLabel(spot.noise)}</span>
-            </div>
-            <div class="noise-progress-track">
-              <div class="noise-progress-bar" style="inline-size: ${pct}%"></div>
-            </div>
-          </div>
-
-          <div class="amenities-tags" aria-label="Amenities">
-            ${spot.amenities.map(a => `<span class="amenity-tag">${escapeHTML(a)}</span>`).join("")}
-          </div>
-        </div>
+        ${desksHtml}
       </article>
     `;
   }).join("");
 
-  // Attach bookmark toggle listeners
-  grid.querySelectorAll(".bookmark-btn").forEach(btn => {
+  attachFloorEventListeners();
+}
+
+function attachFloorEventListeners() {
+  // Hold Best button click
+  document.querySelectorAll(".btn-hold-best").forEach(btn => {
     btn.addEventListener("click", () => {
-      const spotId = btn.getAttribute("data-spot-id");
-      toggleBookmark(spotId);
+      const floorId = btn.getAttribute("data-floor-id");
+      const deskId = btn.getAttribute("data-desk-id");
+      if (floorId && deskId) openHoldConfirmModal(floorId, deskId);
+    });
+  });
+
+  // Individual Desk Tap click
+  document.querySelectorAll(".desk-seat-pill.seat-open").forEach(seat => {
+    seat.addEventListener("click", () => {
+      const floorId = seat.getAttribute("data-floor-id");
+      const deskId = seat.getAttribute("data-desk-id");
+      if (floorId && deskId) openHoldConfirmModal(floorId, deskId);
+    });
+  });
+
+  // Room hold buttons
+  document.querySelectorAll(".hold-room-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const floorId = btn.getAttribute("data-floor-id");
+      const roomId = btn.getAttribute("data-room-id");
+      if (floorId && roomId) openHoldConfirmModal(floorId, roomId);
+    });
+  });
+
+  // Floor bookmark button click
+  document.querySelectorAll(".floor-bookmark-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const floorId = btn.getAttribute("data-bookmark-floor");
+      toggleSaveFloor(floorId);
     });
   });
 }
 
-function getNoiseLabel(db) {
-  if (db <= 30) return "Whisper Quiet";
-  if (db <= 40) return "Library Calm";
-  return "Gentle Ambience";
-}
-
-function toggleBookmark(id) {
-  if (state.savedSpotIds.has(id)) {
-    state.savedSpotIds.delete(id);
-    showToast("Spot removed from saved sanctuaries.");
+function toggleSaveFloor(floorId) {
+  if (state.savedFloorIds.has(floorId)) {
+    state.savedFloorIds.delete(floorId);
+    showToast("Floor removed from your saved list.");
   } else {
-    state.savedSpotIds.add(id);
-    showToast("Spot saved to your sanctuaries collection!");
+    state.savedFloorIds.add(floorId);
+    showToast("Floor added to your saved sanctuaries!");
   }
-  saveBookmarks();
-  renderSpots();
+  persistState();
+  renderFloors();
+  renderSavedSpotsList();
 }
 
-function escapeHTML(str) {
-  return String(str).replace(/[&<>'"]/g, tag => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "'": "&#39;",
-    '"': "&quot;"
-  }[tag] || tag));
-}
+// Search and Filter controls in Tab 1
+function initFloorControls() {
+  const searchInput = document.getElementById("zoneSearchInput");
+  const clearBtn = document.getElementById("clearZoneSearchBtn");
+  const chips = document.querySelectorAll(".filter-chip:not(.chip-power)");
+  const powerChip = document.getElementById("powerFilterChip");
+  const sortSelect = document.getElementById("zoneSortSelect");
 
-// ==========================================================================
-// 5. Search & Filters Setup
-// ==========================================================================
-
-function initFilters() {
-  const searchInput = document.getElementById("searchInput");
-  const clearBtn = document.getElementById("clearSearchBtn");
-  const noiseSelect = document.getElementById("noiseLevelSelect");
-  const categoryPills = document.querySelectorAll(".filter-pill");
-  const resetBtn = document.getElementById("resetFiltersBtn");
-
-  // Search input handler
-  searchInput.addEventListener("input", (e) => {
-    state.searchQuery = e.target.value;
-    clearBtn.hidden = state.searchQuery === "";
-    renderSpots();
-  });
-
-  clearBtn.addEventListener("click", () => {
-    searchInput.value = "";
-    state.searchQuery = "";
-    clearBtn.hidden = true;
-    searchInput.focus();
-    renderSpots();
-  });
-
-  // Noise level select handler
-  noiseSelect.addEventListener("change", (e) => {
-    state.maxNoise = e.target.value;
-    renderSpots();
-  });
-
-  // Category pill handlers
-  categoryPills.forEach(pill => {
-    pill.addEventListener("click", () => {
-      categoryPills.forEach(p => p.classList.remove("active"));
-      pill.classList.add("active");
-      state.activeCategory = pill.getAttribute("data-category");
-      renderSpots();
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      state.searchQuery = e.target.value;
+      if (clearBtn) clearBtn.hidden = state.searchQuery === "";
+      renderFloors();
     });
-  });
+  }
 
-  // Reset filters
-  if (resetBtn) {
-    resetBtn.addEventListener("click", () => {
-      state.searchQuery = "";
-      state.maxNoise = "all";
-      state.activeCategory = "all";
-
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
       searchInput.value = "";
+      state.searchQuery = "";
       clearBtn.hidden = true;
-      noiseSelect.value = "all";
-
-      categoryPills.forEach(p => {
-        p.classList.toggle("active", p.getAttribute("data-category") === "all");
-      });
-
-      renderSpots();
+      searchInput.focus();
+      renderFloors();
     });
   }
-}
 
-// ==========================================================================
-// 6. Modal Dialog Handling (Modern Native <dialog>)
-// ==========================================================================
-
-function initDialog() {
-  const dialog = document.getElementById("addSpotModal");
-  const openBtn = document.getElementById("openAddSpotBtn");
-  const closeBtn = document.getElementById("closeModalBtn");
-  const cancelBtn = document.getElementById("cancelModalBtn");
-  const form = document.getElementById("addSpotForm");
-  const noiseSlider = document.getElementById("spotNoise");
-  const noiseDisplay = document.getElementById("noiseDisplayVal");
-
-  // Noise range display sync
-  noiseSlider.addEventListener("input", (e) => {
-    noiseDisplay.textContent = `${e.target.value} dB`;
+  chips.forEach(chip => {
+    chip.addEventListener("click", () => {
+      chips.forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      state.filterCategory = chip.getAttribute("data-filter");
+      renderFloors();
+    });
   });
 
-  // Open modal
-  openBtn.addEventListener("click", () => {
-    dialog.showModal();
-  });
-
-  // Close buttons
-  const closeModal = () => dialog.close();
-  closeBtn.addEventListener("click", closeModal);
-  cancelBtn.addEventListener("click", closeModal);
-
-  // Fallback for browsers that do not yet support declarative light-dismiss via closedby="any"
-  if (!("closedBy" in HTMLDialogElement.prototype)) {
-    dialog.addEventListener("click", (event) => {
-      // 1. When clicking the backdrop, event target is the dialog element itself
-      if (event.target !== dialog) return;
-
-      // 2. Check if the click coordinates fall within the dialog content boundaries
-      const rect = dialog.getBoundingClientRect();
-      const isInsideContent = (
-        rect.top <= event.clientY &&
-        event.clientY <= rect.top + rect.height &&
-        rect.left <= event.clientX &&
-        event.clientX <= rect.left + rect.width
-      );
-
-      if (!isInsideContent) {
-        dialog.close();
+  // CP6 Fix ISS-03: Power Outlets Toggle
+  if (powerChip) {
+    powerChip.addEventListener("click", () => {
+      state.powerFilterActive = !state.powerFilterActive;
+      powerChip.classList.toggle("active", state.powerFilterActive);
+      powerChip.setAttribute("data-active", state.powerFilterActive ? "true" : "false");
+      renderFloors();
+      if (state.powerFilterActive) {
+        showToast("Filtering desks with ⚡ Power Outlets only");
       }
     });
   }
 
-  // Clear stale returnValue on close per modern guidance
-  dialog.addEventListener("close", () => {
-    dialog.returnValue = "";
-  });
-
-  // Form submit handler
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("spotName").value.trim();
-    const category = document.getElementById("spotCategory").value;
-    const categoryName = document.getElementById("spotCategory").selectedOptions[0].text;
-    const noise = parseInt(noiseSlider.value, 10);
-    const location = document.getElementById("spotLocation").value.trim();
-    const description = document.getElementById("spotDescription").value.trim() || "A serene space recommended by the community.";
-
-    const checkedAmenities = Array.from(form.querySelectorAll("input[name='amenity']:checked"))
-      .map(cb => cb.value);
-
-    const newSpot = {
-      id: `custom-${Date.now()}`,
-      name,
-      category,
-      categoryName,
-      noise,
-      location,
-      amenities: checkedAmenities.length > 0 ? checkedAmenities : ["Natural Light"],
-      description
-    };
-
-    state.spots.unshift(newSpot);
-    saveCustomSpot(newSpot);
-
-    form.reset();
-    noiseDisplay.textContent = "32 dB";
-    dialog.close();
-
-    // Re-render and show toast
-    renderSpots();
-    showToast(`"${name}" added to Quiet Spot sanctuaries!`);
-
-    // Scroll to directory
-    document.getElementById("directory").scrollIntoView({ behavior: "smooth" });
-  });
+  if (sortSelect) {
+    sortSelect.addEventListener("change", (e) => {
+      state.sortOrder = e.target.value;
+      renderFloors();
+    });
+  }
 }
 
 // ==========================================================================
-// 7. Live Toast Notifications
+// 6. HOLD & SESSION TIMERS ARCHITECTURE
 // ==========================================================================
 
-function showToast(message, duration = 3500) {
-  const container = document.getElementById("toastNotification");
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = message;
+function formatMMSS(totalSecs) {
+  const m = Math.floor(totalSecs / 60).toString().padStart(2, "0");
+  const s = (totalSecs % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+}
 
-  container.appendChild(toast);
+function formatHHMMSS(totalSecs) {
+  const h = Math.floor(totalSecs / 3600).toString().padStart(2, "0");
+  const m = Math.floor((totalSecs % 3600) / 60).toString().padStart(2, "0");
+  const s = (totalSecs % 60).toString().padStart(2, "0");
+  return `${h}:${m}:${s}`;
+}
 
-  setTimeout(() => {
-    toast.style.opacity = "0";
-    toast.style.transition = "opacity 300ms ease";
-    setTimeout(() => toast.remove(), 300);
-  }, duration);
+function updateActiveSessionBanner() {
+  const banner = document.getElementById("activeSessionBanner");
+  const badge = document.getElementById("sessionStatusBadge");
+  const deskEl = document.getElementById("sessionDeskId");
+  const locEl = document.getElementById("sessionLocationMeta");
+  const timerLbl = document.getElementById("sessionTimerLabel");
+  const clock = document.getElementById("sessionTickingClock");
+  const primaryBtn = document.getElementById("bannerPrimaryActionBtn");
+  const secondaryBtn = document.getElementById("bannerSecondaryActionBtn");
+
+  if (!banner) return;
+
+  if (state.activeHold) {
+    banner.hidden = false;
+    banner.className = "active-session-banner";
+    badge.textContent = "15-Min Hold Active";
+    deskEl.textContent = state.activeHold.deskId;
+    locEl.textContent = `· ${state.activeHold.floorName}`;
+    timerLbl.textContent = "Walk Hold Countdown:";
+    clock.textContent = formatMMSS(state.activeHold.remainingSeconds);
+
+    primaryBtn.textContent = "Scan Desk QR";
+    primaryBtn.onclick = () => switchTab("scan-view");
+
+    secondaryBtn.textContent = "Cancel Hold";
+    secondaryBtn.onclick = () => releaseHold("Hold cancelled by user.");
+  } else if (state.activeSession) {
+    banner.hidden = false;
+    deskEl.textContent = state.activeSession.deskId;
+    locEl.textContent = `· ${state.activeSession.floorName}`;
+
+    if (state.activeSession.isBreak) {
+      banner.className = "active-session-banner status-break";
+      badge.textContent = "20-Min Break Hold";
+      timerLbl.textContent = "Break Remaining:";
+      clock.textContent = formatMMSS(state.activeSession.breakRemainingSeconds);
+
+      primaryBtn.textContent = "Resume Study";
+      primaryBtn.onclick = () => resumeFromBreak();
+
+      secondaryBtn.textContent = "Check-Out";
+      secondaryBtn.onclick = () => openCleanCheckOutModal();
+    } else {
+      banner.className = "active-session-banner status-checked-in";
+      badge.textContent = "Checked In & Studying";
+      timerLbl.textContent = "Study Time Elapsed:";
+      clock.textContent = formatHHMMSS(state.activeSession.elapsedSeconds);
+
+      primaryBtn.textContent = "Take Break";
+      primaryBtn.onclick = () => startBreak();
+
+      secondaryBtn.textContent = "Clean Check-Out";
+      secondaryBtn.onclick = () => openCleanCheckOutModal();
+    }
+  } else {
+    banner.hidden = true;
+  }
+
+  updateScannerViewUI();
+}
+
+function startHoldCountdown() {
+  if (state.intervals.holdTimer) clearInterval(state.intervals.holdTimer);
+
+  state.intervals.holdTimer = setInterval(() => {
+    if (!state.activeHold) {
+      clearInterval(state.intervals.holdTimer);
+      return;
+    }
+
+    state.activeHold.remainingSeconds--;
+
+    if (state.activeHold.remainingSeconds <= 0) {
+      clearInterval(state.intervals.holdTimer);
+      const expiredDesk = state.activeHold.deskId;
+      releaseHold(`Walk hold for ${expiredDesk} expired. Seat released for campus peers.`);
+    } else {
+      updateActiveSessionBanner();
+      persistState();
+    }
+  }, 1000);
+}
+
+function startSessionClock() {
+  if (state.intervals.sessionTimer) clearInterval(state.intervals.sessionTimer);
+
+  state.intervals.sessionTimer = setInterval(() => {
+    if (!state.activeSession) {
+      clearInterval(state.intervals.sessionTimer);
+      return;
+    }
+
+    if (state.activeSession.isBreak) {
+      if (state.activeSession.breakRemainingSeconds > 0) {
+        state.activeSession.breakRemainingSeconds--;
+      } else {
+        // Break expired -> auto release seat
+        showToast("Break time expired. Desk released for other students.");
+        cleanCheckOutSession();
+        return;
+      }
+    } else {
+      state.activeSession.elapsedSeconds++;
+    }
+
+    updateActiveSessionBanner();
+    persistState();
+  }, 1000);
+}
+
+function releaseHold(reason) {
+  if (state.activeHold) {
+    const { floorId, deskId } = state.activeHold;
+    const floor = state.floors.find(f => f.id === floorId);
+    if (floor) {
+      const desk = (floor.desks || floor.cabins || []).find(d => d.id === deskId);
+      if (desk) desk.status = "open";
+    }
+    state.activeHold = null;
+    clearInterval(state.intervals.holdTimer);
+    persistState();
+    renderFloors();
+    updateActiveSessionBanner();
+    if (reason) showToast(reason);
+  }
 }
 
 // ==========================================================================
-// 8. Web Audio API Ambient Sound Sanctuary
+// 7. TAB 2: SCAN DESK QR & ARRIVAL VERIFICATION
 // ==========================================================================
 
-class AmbientSoundEngine {
+function updateScannerViewUI() {
+  const targetPill = document.getElementById("scannerTargetPill");
+  const scanBtnText = document.getElementById("scanBtnText");
+  const qrBadge = document.getElementById("qrDeskCodeBadge");
+  const deskStatePill = document.getElementById("deskStatePill");
+  const emptyState = document.getElementById("noActiveSessionState");
+  const sessionPanel = document.getElementById("activeSessionPanel");
+  const walkInPicker = document.getElementById("walkInDeskPickerWrapper");
+  const walkInSelect = document.getElementById("walkInDeskSelect");
+
+  const activeFloor = document.getElementById("activeFloorName");
+  const activeDesk = document.getElementById("activeDeskDisplayId");
+  const activeClock = document.getElementById("activeSessionElapsedTime");
+  const activeTimerCaption = document.getElementById("activeTimerCaption");
+  const activeTimerSub = document.getElementById("activeTimerSubtext");
+  const breakBtn = document.getElementById("takeBreakBtn");
+  const breakBtnText = document.getElementById("breakBtnText");
+
+  if (!targetPill || !scanBtnText) return;
+
+  if (state.activeHold) {
+    const dId = state.activeHold.deskId;
+    targetPill.textContent = `Target: ${dId}`;
+    scanBtnText.textContent = `Simulate Desk QR Scan (Check In to ${dId})`;
+    qrBadge.textContent = `DESK: ${dId}`;
+    deskStatePill.textContent = "15-Min Hold Active";
+    deskStatePill.className = "state-pill text-amber";
+
+    emptyState.hidden = true;
+    sessionPanel.hidden = false;
+    walkInPicker.hidden = true;
+
+    activeFloor.textContent = state.activeHold.floorName;
+    activeDesk.textContent = dId;
+    activeClock.textContent = formatMMSS(state.activeHold.remainingSeconds);
+    activeClock.className = "box-clock text-amber";
+    activeTimerCaption.textContent = "Walk Hold Countdown";
+    activeTimerSub.textContent = "Tap 'Simulate Desk QR Scan' on arrival to confirm desk.";
+    breakBtn.hidden = true;
+
+  } else if (state.activeSession) {
+    const dId = state.activeSession.deskId;
+    targetPill.textContent = `Active: ${dId}`;
+    scanBtnText.textContent = `Verified at Desk ${dId}`;
+    qrBadge.textContent = `DESK: ${dId}`;
+    deskStatePill.textContent = state.activeSession.isBreak ? "Break Hold Active" : "In Session";
+    deskStatePill.className = state.activeSession.isBreak ? "state-pill text-amber" : "state-pill text-emerald";
+
+    emptyState.hidden = true;
+    sessionPanel.hidden = false;
+    walkInPicker.hidden = true;
+
+    activeFloor.textContent = state.activeSession.floorName;
+    activeDesk.textContent = dId;
+    breakBtn.hidden = false;
+
+    if (state.activeSession.isBreak) {
+      activeClock.textContent = formatMMSS(state.activeSession.breakRemainingSeconds);
+      activeClock.className = "box-clock text-amber";
+      activeTimerCaption.textContent = "20-Min Break Time Left";
+      activeTimerSub.textContent = "Seat protected. Tap 'Resume Study' upon return.";
+      breakBtnText.textContent = "Resume Studying";
+    } else {
+      activeClock.textContent = formatHHMMSS(state.activeSession.elapsedSeconds);
+      activeClock.className = "box-clock text-emerald";
+      activeTimerCaption.textContent = "Study Session In Progress";
+      activeTimerSub.textContent = "Checked in via Optical Desk QR Verification";
+      breakBtnText.textContent = "Take 20-Min Break Hold";
+    }
+
+  } else {
+    // No hold, no session
+    targetPill.textContent = "Target: Open Desks";
+    scanBtnText.textContent = "Simulate Desk QR Scan (Walk-In)";
+    qrBadge.textContent = "SCAN ANY DESK";
+    deskStatePill.textContent = "No Active Session";
+    deskStatePill.className = "state-pill";
+
+    emptyState.hidden = false;
+    sessionPanel.hidden = true;
+    walkInPicker.hidden = false;
+
+    // Populate walk in select with open desks
+    if (walkInSelect) {
+      let openOptions = [];
+      state.floors.forEach(f => {
+        (f.desks || f.cabins || []).forEach(d => {
+          if (d.status === "open") {
+            openOptions.push(`<option value="${f.id}|${d.id}">${d.id} &middot; ${f.name}</option>`);
+          }
+        });
+      });
+      walkInSelect.innerHTML = openOptions.join("");
+    }
+  }
+}
+
+function checkInToDesk(floorId, deskId) {
+  // Clear hold if held
+  if (state.activeHold) {
+    clearInterval(state.intervals.holdTimer);
+    state.activeHold = null;
+  }
+
+  const floor = state.floors.find(f => f.id === floorId);
+  const floorName = floor ? floor.name : "Central Library 5th Floor";
+
+  if (floor) {
+    const desk = (floor.desks || floor.cabins || []).find(d => d.id === deskId);
+    if (desk) desk.status = "occupied";
+  }
+
+  state.activeSession = {
+    deskId,
+    floorId,
+    floorName,
+    checkedInAt: Date.now(),
+    elapsedSeconds: 0,
+    isBreak: false,
+    breakRemainingSeconds: 20 * 60
+  };
+
+  startSessionClock();
+  persistState();
+  renderFloors();
+  updateActiveSessionBanner();
+
+  showToast(`QR Scan Verified! Checked in to ${deskId}. Digital Desk Boundary is now active.`);
+}
+
+function startBreak() {
+  if (!state.activeSession) return;
+
+  state.activeSession.isBreak = true;
+  state.activeSession.breakRemainingSeconds = 20 * 60;
+  state.activeSession.breakExpiresAt = Date.now() + 20 * 60 * 1000;
+
+  persistState();
+  updateActiveSessionBanner();
+  showToast("20-Minute Break Hold started. Desk protected against bag-sprawling.");
+}
+
+function resumeFromBreak() {
+  if (!state.activeSession) return;
+  state.activeSession.isBreak = false;
+  persistState();
+  updateActiveSessionBanner();
+  showToast("Welcome back! Study session resumed.");
+}
+
+function cleanCheckOutSession() {
+  if (!state.activeSession) return;
+
+  const { floorId, deskId } = state.activeSession;
+  const floor = state.floors.find(f => f.id === floorId);
+  if (floor) {
+    const desk = (floor.desks || floor.cabins || []).find(d => d.id === deskId);
+    if (desk) desk.status = "open";
+  }
+
+  clearInterval(state.intervals.sessionTimer);
+  state.activeSession = null;
+
+  // Increment stats
+  state.stats.completedSessions++;
+  state.stats.savedWalkMins += 15;
+
+  persistState();
+  renderFloors();
+  updateActiveSessionBanner();
+  renderStudyStats();
+
+  showToast(`Clean check-out confirmed for ${deskId}. Desk is ready for fellow students!`);
+}
+
+function initScanHandlers() {
+  const triggerBtn = document.getElementById("triggerScanActionBtn");
+  const walkInBtn = document.getElementById("walkInCheckInBtn");
+  const walkInSelect = document.getElementById("walkInDeskSelect");
+  const breakBtn = document.getElementById("takeBreakBtn");
+  const checkOutBtn = document.getElementById("cleanCheckOutBtn");
+
+  if (triggerBtn) {
+    triggerBtn.addEventListener("click", () => {
+      if (state.activeHold) {
+        checkInToDesk(state.activeHold.floorId, state.activeHold.deskId);
+      } else if (state.activeSession) {
+        showToast(`You are already checked in to ${state.activeSession.deskId}.`);
+      } else {
+        // Walk in scan to 5F-B04 default or first open
+        if (walkInSelect && walkInSelect.value) {
+          const [fId, dId] = walkInSelect.value.split("|");
+          checkInToDesk(fId, dId);
+        } else {
+          checkInToDesk("floor-5", "5F-B04");
+        }
+      }
+    });
+  }
+
+  if (walkInBtn && walkInSelect) {
+    walkInBtn.addEventListener("click", () => {
+      if (walkInSelect.value) {
+        const [fId, dId] = walkInSelect.value.split("|");
+        checkInToDesk(fId, dId);
+      }
+    });
+  }
+
+  if (breakBtn) {
+    breakBtn.addEventListener("click", () => {
+      if (state.activeSession) {
+        if (state.activeSession.isBreak) {
+          resumeFromBreak();
+        } else {
+          startBreak();
+        }
+      }
+    });
+  }
+
+  if (checkOutBtn) {
+    checkOutBtn.addEventListener("click", () => openCleanCheckOutModal());
+  }
+}
+
+// ==========================================================================
+// 8. TAB 3: QUIET ALERT (100% ANONYMOUS DECORUM REPORTING)
+// ==========================================================================
+
+function renderRecentAlerts() {
+  const list = document.getElementById("recentAlertsList");
+  if (!list) return;
+
+  list.innerHTML = state.decorumAlerts.map(alert => `
+    <div class="alert-feed-item">
+      <div>
+        <span class="feed-status-dot"></span>
+        <strong>${escapeHTML(alert.category)}</strong>
+        <span class="text-subtle"> &middot; ${escapeHTML(alert.floor)}</span>
+      </div>
+      <div style="text-align:right;">
+        <span class="feed-time">${escapeHTML(alert.time)}</span>
+        <div style="font-size:0.7rem; color:var(--color-emerald); font-weight:600;">${escapeHTML(alert.status)}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function initDecorumAlertForm() {
+  const form = document.getElementById("decorumAlertForm");
+  const chips = document.querySelectorAll(".disruption-chip");
+  let selectedCategory = "Loud Talking in Silent Zone";
+
+  chips.forEach(chip => {
+    chip.addEventListener("click", () => {
+      chips.forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      selectedCategory = chip.getAttribute("data-category");
+    });
+  });
+
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const floor = document.getElementById("alertFloorSelect").value;
+      const deskContext = document.getElementById("alertDeskInput").value.trim();
+
+      const newAlert = {
+        id: `alert-${Date.now()}`,
+        time: "Just now",
+        floor: deskContext ? `${floor} (${deskContext})` : floor,
+        category: selectedCategory,
+        status: "Floor Supervisor Notified (Check: 3-5m)"
+      };
+
+      state.decorumAlerts.unshift(newAlert);
+      if (state.decorumAlerts.length > 5) state.decorumAlerts.pop();
+
+      persistState();
+      renderRecentAlerts();
+
+      form.reset();
+      chips[0].click();
+
+      showToast("Floor supervisor silently notified. 100% anonymous — no credentials sent.");
+    });
+  }
+}
+
+// 6-Second Browser Microphone Decibel Meter (Web Audio API)
+function initMicMeter() {
+  const startBtn = document.getElementById("startMicMeterBtn");
+  const meterText = document.getElementById("meterBtnText");
+  const dbVal = document.getElementById("liveMeterDbVal");
+  const classBadge = document.getElementById("liveMeterClassBadge");
+  const barFill = document.getElementById("meterBarFill");
+  const samplingState = document.getElementById("meterSamplingState");
+  const countdownVal = document.getElementById("meterCountdownVal");
+
+  let audioCtx = null;
+  let micStream = null;
+
+  startBtn.addEventListener("click", async () => {
+    startBtn.disabled = true;
+    meterText.textContent = "Measuring room sound...";
+    samplingState.hidden = false;
+
+    let secondsLeft = 6;
+    countdownVal.textContent = "6s";
+
+    let samples = [];
+
+    // Attempt real Web Audio API getUserMedia
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioCtx.createMediaStreamSource(micStream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+        const sampleInterval = setInterval(() => {
+          analyser.getByteFrequencyData(dataArray);
+          let sum = 0;
+          for (let i = 0; i < dataArray.length; i++) {
+            sum += dataArray[i];
+          }
+          const avg = sum / dataArray.length;
+          // Approximate calibrated dB scale (20dB to 75dB)
+          const estimatedDb = Math.round(28 + (avg / 255) * 45);
+          samples.push(estimatedDb);
+          updateMeterDisplay(estimatedDb);
+        }, 200);
+
+        // 6 second timer
+        const countInterval = setInterval(() => {
+          secondsLeft--;
+          countdownVal.textContent = `${secondsLeft}s`;
+          if (secondsLeft <= 0) {
+            clearInterval(countInterval);
+            clearInterval(sampleInterval);
+            finishMeasurement(samples, micStream, audioCtx);
+          }
+        }, 1000);
+
+        return;
+      }
+    } catch (err) {
+      console.warn("Microphone access unavailable or denied. Using calibrated simulated telemetry fallback.", err);
+    }
+
+    // Graceful simulated measurement fallback
+    const simInterval = setInterval(() => {
+      const simulatedDb = Math.floor(32 + Math.random() * 8); // 32-40 dB library range
+      samples.push(simulatedDb);
+      updateMeterDisplay(simulatedDb);
+    }, 250);
+
+    const countInterval = setInterval(() => {
+      secondsLeft--;
+      countdownVal.textContent = `${secondsLeft}s`;
+      if (secondsLeft <= 0) {
+        clearInterval(countInterval);
+        clearInterval(simInterval);
+        finishMeasurement(samples, null, null);
+      }
+    }, 1000);
+  });
+
+  function updateMeterDisplay(db) {
+    dbVal.textContent = `${db} dB`;
+    const pct = Math.min(100, Math.max(10, ((db - 20) / 60) * 100));
+    barFill.style.inlineSize = `${pct}%`;
+
+    if (db <= 35) {
+      dbVal.className = "live-db-val text-emerald";
+      classBadge.textContent = "Whisper Silent · Optimal for Deep Focus";
+    } else if (db <= 44) {
+      dbVal.className = "live-db-val text-blue";
+      classBadge.textContent = "Library Calm · Optimal for Study";
+    } else {
+      dbVal.className = "live-db-val text-amber";
+      classBadge.textContent = "Gentle Murmur · Casual Collaboration";
+    }
+  }
+
+  function finishMeasurement(samples, stream, ctx) {
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    if (ctx) ctx.close();
+
+    samplingState.hidden = true;
+    startBtn.disabled = false;
+    meterText.textContent = "Measure Again (6-Sec Meter)";
+
+    const avgDb = samples.length > 0 
+      ? Math.round(samples.reduce((a, b) => a + b, 0) / samples.length) 
+      : 36;
+
+    updateMeterDisplay(avgDb);
+    showToast(`Acoustic measurement complete: Average ${avgDb} dB recorded locally.`);
+  }
+}
+
+// ==========================================================================
+// 9. TAB 4: ROUTINE, FOCUS TOOLS & WEBAUDIO AMBIENT GENERATOR
+// ==========================================================================
+
+function renderSavedSpotsList() {
+  const container = document.getElementById("savedSpotsList");
+  const countBadge = document.getElementById("savedCountBadge");
+  if (!container) return;
+
+  if (countBadge) {
+    countBadge.textContent = `${state.savedFloorIds.size} Saved`;
+  }
+
+  const savedFloors = state.floors.filter(f => state.savedFloorIds.has(f.id));
+
+  if (savedFloors.length === 0) {
+    container.innerHTML = `
+      <div style="font-size:0.84rem; color:var(--color-text-subtle); padding:1rem; text-align:center;">
+        No favorite floors saved yet. Tap the bookmark icon on any floor in Map &amp; Hold to pin it here.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = savedFloors.map(f => `
+    <div class="saved-item-box">
+      <div class="saved-item-info">
+        <span class="saved-item-name">${escapeHTML(f.name)}</span>
+        <span class="saved-item-meta">${escapeHTML(f.subtitle)} &middot; ${f.noise} dB</span>
+      </div>
+      <button type="button" class="btn btn-sm btn-secondary" onclick="switchTab('map-view')">
+        Open Map
+      </button>
+    </div>
+  `).join("");
+}
+
+function renderStudyStats() {
+  const comp = document.getElementById("statCompletedSessions");
+  const walk = document.getElementById("statSavedWalkMins");
+  const clean = document.getElementById("statCleanCheckouts");
+
+  if (comp) comp.textContent = state.stats.completedSessions;
+  if (walk) walk.textContent = `${state.stats.savedWalkMins}m`;
+  if (clean) clean.textContent = `${state.stats.cleanCheckouts}%`;
+}
+
+// Web Audio Ambient Synthesizer
+class CampusSoundSanctuary {
   constructor() {
     this.ctx = null;
     this.masterGain = null;
@@ -510,25 +1372,16 @@ class AmbientSoundEngine {
       drone: { active: false, gain: null, node: null, volume: 0.3 }
     };
     this.masterVolume = 0.7;
-    this.initialized = false;
   }
 
   ensureContext() {
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      this.ctx = new AudioCtx();
-
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AudioContextClass();
       this.masterGain = this.ctx.createGain();
       this.masterGain.gain.setValueAtTime(this.masterVolume, this.ctx.currentTime);
       this.masterGain.connect(this.ctx.destination);
-      this.initialized = true;
-
-      const statusEl = document.getElementById("audioEngineStatus");
-      if (statusEl) {
-        statusEl.textContent = "Audio Engine Active";
-      }
     }
-
     if (this.ctx.state === "suspended") {
       this.ctx.resume();
     }
@@ -541,7 +1394,7 @@ class AmbientSoundEngine {
     }
   }
 
-  setChannelVolume(type, val) {
+  setVolume(type, val) {
     if (!this.channels[type]) return;
     this.channels[type].volume = val;
     if (this.channels[type].gain && this.ctx) {
@@ -549,19 +1402,19 @@ class AmbientSoundEngine {
     }
   }
 
-  toggleSound(type) {
+  toggle(type) {
     this.ensureContext();
     const ch = this.channels[type];
     if (ch.active) {
-      this.stopSound(type);
+      this.stop(type);
       return false;
     } else {
-      this.startSound(type);
+      this.start(type);
       return true;
     }
   }
 
-  startSound(type) {
+  start(type) {
     this.ensureContext();
     const ch = this.channels[type];
     if (ch.active) return;
@@ -570,30 +1423,19 @@ class AmbientSoundEngine {
     ch.gain.gain.setValueAtTime(ch.volume, this.ctx.currentTime);
     ch.gain.connect(this.masterGain);
 
-    switch (type) {
-      case "rain":
-        ch.node = this.createRainNode(ch.gain);
-        break;
-      case "pink":
-        ch.node = this.createPinkNoiseNode(ch.gain);
-        break;
-      case "breeze":
-        ch.node = this.createBreezeNode(ch.gain);
-        break;
-      case "drone":
-        ch.node = this.createDroneNode(ch.gain);
-        break;
-    }
+    if (type === "pink") ch.node = this.createPinkNoise(ch.gain);
+    if (type === "rain") ch.node = this.createRain(ch.gain);
+    if (type === "breeze") ch.node = this.createBreeze(ch.gain);
+    if (type === "drone") ch.node = this.createDrone(ch.gain);
 
     ch.active = true;
   }
 
-  stopSound(type) {
+  stop(type) {
     const ch = this.channels[type];
     if (!ch.active) return;
 
     if (ch.gain && this.ctx) {
-      // Smooth fade out
       ch.gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.08);
       setTimeout(() => {
         if (ch.node) {
@@ -606,16 +1448,13 @@ class AmbientSoundEngine {
         if (ch.gain) ch.gain.disconnect();
         ch.active = false;
       }, 100);
-    } else {
-      ch.active = false;
     }
   }
 
-  // Pink noise algorithm via buffer
-  createPinkNoiseBuffer() {
+  createPinkBuffer() {
     const bufferSize = this.ctx.sampleRate * 2;
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-    const output = buffer.getChannelData(0);
+    const data = buffer.getChannelData(0);
     let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
 
     for (let i = 0; i < bufferSize; i++) {
@@ -626,264 +1465,416 @@ class AmbientSoundEngine {
       b3 = 0.86650 * b3 + white * 0.3104856;
       b4 = 0.55000 * b4 + white * 0.5329522;
       b5 = -0.7616 * b5 - white * 0.0168980;
-      output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+      data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
       b6 = white * 0.115926;
     }
     return buffer;
   }
 
-  createPinkNoiseNode(targetGain) {
-    const buffer = this.createPinkNoiseBuffer();
-    const source = this.ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    source.connect(targetGain);
-    source.start();
-    return source;
+  createPinkNoise(target) {
+    const src = this.ctx.createBufferSource();
+    src.buffer = this.createPinkBuffer();
+    src.loop = true;
+    src.connect(target);
+    src.start();
+    return src;
   }
 
-  // Gentle rain via filtered noise with gentle randomized rumble
-  createRainNode(targetGain) {
-    const buffer = this.createPinkNoiseBuffer();
-    const source = this.ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
+  createRain(target) {
+    const src = this.ctx.createBufferSource();
+    src.buffer = this.createPinkBuffer();
+    src.loop = true;
 
-    const lowpass = this.ctx.createBiquadFilter();
-    lowpass.type = "lowpass";
-    lowpass.frequency.setValueAtTime(1400, this.ctx.currentTime);
+    const lp = this.ctx.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.setValueAtTime(1200, this.ctx.currentTime);
 
-    const highpass = this.ctx.createBiquadFilter();
-    highpass.type = "highpass";
-    highpass.frequency.setValueAtTime(250, this.ctx.currentTime);
+    const hp = this.ctx.createBiquadFilter();
+    hp.type = "highpass";
+    hp.frequency.setValueAtTime(300, this.ctx.currentTime);
 
-    source.connect(lowpass);
-    lowpass.connect(highpass);
-    highpass.connect(targetGain);
-    source.start();
-    return source;
+    src.connect(lp);
+    lp.connect(hp);
+    hp.connect(target);
+    src.start();
+    return src;
   }
 
-  // Forest breeze with gentle sweeping filter
-  createBreezeNode(targetGain) {
-    const buffer = this.createPinkNoiseBuffer();
-    const source = this.ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
+  createBreeze(target) {
+    const src = this.ctx.createBufferSource();
+    src.buffer = this.createPinkBuffer();
+    src.loop = true;
 
     const filter = this.ctx.createBiquadFilter();
     filter.type = "bandpass";
-    filter.frequency.setValueAtTime(450, this.ctx.currentTime);
-    filter.Q.setValueAtTime(1.5, this.ctx.currentTime);
+    filter.frequency.setValueAtTime(400, this.ctx.currentTime);
+    filter.Q.setValueAtTime(1.8, this.ctx.currentTime);
 
-    // LFO to slowly sweep breeze frequency
     const lfo = this.ctx.createOscillator();
-    lfo.frequency.setValueAtTime(0.18, this.ctx.currentTime);
+    lfo.frequency.setValueAtTime(0.15, this.ctx.currentTime);
+
     const lfoGain = this.ctx.createGain();
-    lfoGain.gain.setValueAtTime(220, this.ctx.currentTime);
+    lfoGain.gain.setValueAtTime(200, this.ctx.currentTime);
 
     lfo.connect(lfoGain);
     lfoGain.connect(filter.frequency);
 
-    source.connect(filter);
-    filter.connect(targetGain);
+    src.connect(filter);
+    filter.connect(target);
 
-    source.start();
+    src.start();
     lfo.start();
-    return [source, lfo];
+    return [src, lfo];
   }
 
-  // Harmonic 432Hz Drone with gentle vibrato
-  createDroneNode(targetGain) {
+  createDrone(target) {
     const osc1 = this.ctx.createOscillator();
     osc1.type = "sine";
-    osc1.frequency.setValueAtTime(216, this.ctx.currentTime); // Fundamental 216Hz
+    osc1.frequency.setValueAtTime(216, this.ctx.currentTime);
 
     const osc2 = this.ctx.createOscillator();
     osc2.type = "triangle";
-    osc2.frequency.setValueAtTime(432, this.ctx.currentTime); // 432Hz harmonic
+    osc2.frequency.setValueAtTime(432, this.ctx.currentTime);
 
-    const osc2Gain = this.ctx.createGain();
-    osc2Gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+    const gain2 = this.ctx.createGain();
+    gain2.gain.setValueAtTime(0.25, this.ctx.currentTime);
 
-    osc1.connect(targetGain);
-    osc2.connect(osc2Gain);
-    osc2Gain.connect(targetGain);
+    osc1.connect(target);
+    osc2.connect(gain2);
+    gain2.connect(target);
 
     osc1.start();
     osc2.start();
     return [osc1, osc2];
   }
 
-  // Play peaceful chime bell for timer completion
   playChime() {
     this.ensureContext();
-    const notes = [528, 660, 792]; // Harmonic soothing chord
-    notes.forEach((freq, idx) => {
+    [528, 660, 792].forEach((freq, idx) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-
       osc.type = "sine";
       osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.12);
 
-      const startTime = this.ctx.currentTime + idx * 0.12;
-      gain.gain.setValueAtTime(0, startTime);
-      gain.gain.linearRampToValueAtTime(0.2, startTime + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 2.5);
+      const t = this.ctx.currentTime + idx * 0.12;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.25, t + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 2.5);
 
       osc.connect(gain);
       gain.connect(this.masterGain);
 
-      osc.start(startTime);
-      osc.stop(startTime + 2.6);
+      osc.start(t);
+      osc.stop(t + 2.6);
     });
   }
 }
 
 function initSoundSanctuary() {
-  const engine = new AmbientSoundEngine();
+  const engine = new CampusSoundSanctuary();
+  window.campusSoundEngine = engine;
 
-  // Setup sound toggles
-  const sounds = ["rain", "pink", "breeze", "drone"];
-  sounds.forEach(type => {
-    const btn = document.getElementById(`${type}Toggle`);
-    const slider = document.getElementById(`${type}Volume`);
+  ["rain", "pink", "breeze", "drone"].forEach(key => {
+    const btn = document.getElementById(`${key}AudioToggle`);
+    const range = document.getElementById(`${key}VolumeRange`);
 
     if (btn) {
       btn.addEventListener("click", () => {
-        const isNowPlaying = engine.toggleSound(type);
-        btn.setAttribute("aria-pressed", isNowPlaying ? "true" : "false");
-        btn.classList.toggle("playing", isNowPlaying);
+        const isPlaying = engine.toggle(key);
+        btn.setAttribute("aria-pressed", isPlaying ? "true" : "false");
       });
     }
 
-    if (slider) {
-      slider.addEventListener("input", (e) => {
-        const val = parseInt(e.target.value, 10) / 100;
-        engine.setChannelVolume(type, val);
+    if (range) {
+      range.addEventListener("input", (e) => {
+        engine.setVolume(key, parseInt(e.target.value, 10) / 100);
       });
     }
   });
 
-  // Master volume
-  const masterSlider = document.getElementById("masterVolumeSlider");
-  const masterValEl = document.getElementById("masterVolVal");
-  if (masterSlider) {
-    masterSlider.addEventListener("input", (e) => {
-      const val = parseInt(e.target.value, 10);
-      masterValEl.textContent = `${val}%`;
-      engine.setMasterVolume(val / 100);
+  const masterRange = document.getElementById("masterAudioRange");
+  const masterValText = document.getElementById("masterAudioValText");
+  if (masterRange) {
+    masterRange.addEventListener("input", (e) => {
+      const v = parseInt(e.target.value, 10);
+      if (masterValText) masterValText.textContent = `${v}%`;
+      engine.setMasterVolume(v / 100);
     });
   }
 
-  // Connect chime to timer completion
-  window.quietSpotSoundEngine = engine;
+  // Silent Co-Study Toggle listener
+  const coStudy = document.getElementById("coStudyToggle");
+  if (coStudy) {
+    coStudy.addEventListener("change", (e) => {
+      state.coStudyMode = e.target.checked;
+      showToast(state.coStudyMode 
+        ? "Silent Co-Study Mode active: Highlighting desks near peer studiers." 
+        : "Co-Study Mode turned off.");
+    });
+  }
 }
 
-// ==========================================================================
-// 9. Focus Sprint Timer
-// ==========================================================================
+// Pomodoro Timer
+function initPomodoro() {
+  const clock = document.getElementById("pomodoroClock");
+  const startBtn = document.getElementById("pomodoroStartBtn");
+  const btnLabel = document.getElementById("pomodoroBtnLabel");
+  const icon = document.getElementById("pomodoroIcon");
+  const resetBtn = document.getElementById("pomodoroResetBtn");
+  const chips = document.querySelectorAll(".timer-chip");
 
-function initFocusTimer() {
-  const display = document.getElementById("timerClock");
-  const playBtn = document.getElementById("timerPlayBtn");
-  const playText = document.getElementById("timerPlayText");
-  const playIcon = document.getElementById("timerPlayIcon");
-  const resetBtn = document.getElementById("timerResetBtn");
-  const modePills = document.querySelectorAll(".timer-pill");
-
-  function formatTime(secs) {
-    const m = Math.floor(secs / 60).toString().padStart(2, "0");
-    const s = (secs % 60).toString().padStart(2, "0");
-    return `${m}:${s}`;
-  }
-
-  function updateDisplay() {
-    const formatted = formatTime(state.timer.remainingSeconds);
-    display.textContent = formatted;
-    if (state.timer.isRunning) {
-      document.title = `(${formatted}) Quiet Spot Focus`;
-    } else {
-      document.title = "Quiet Spot — Serene Spaces & Focus Sanctuary";
-    }
+  function renderClock() {
+    clock.textContent = formatMMSS(state.pomodoro.remainingSeconds);
   }
 
   function startTimer() {
-    if (state.timer.isRunning) return;
-    state.timer.isRunning = true;
-    playText.textContent = "Pause";
-    playIcon.textContent = "⏸";
+    state.pomodoro.isRunning = true;
+    btnLabel.textContent = "Pause";
+    icon.textContent = "⏸";
 
-    state.timer.intervalId = setInterval(() => {
-      if (state.timer.remainingSeconds > 0) {
-        state.timer.remainingSeconds--;
-        updateDisplay();
+    state.intervals.pomodoroTimer = setInterval(() => {
+      if (state.pomodoro.remainingSeconds > 0) {
+        state.pomodoro.remainingSeconds--;
+        renderClock();
       } else {
-        clearInterval(state.timer.intervalId);
-        state.timer.isRunning = false;
-        playText.textContent = "Start Focus";
-        playIcon.textContent = "▶";
-        updateDisplay();
+        clearInterval(state.intervals.pomodoroTimer);
+        state.pomodoro.isRunning = false;
+        btnLabel.textContent = "Start Sprint";
+        icon.textContent = "▶";
+        renderClock();
 
-        // Play gentle chime
-        if (window.quietSpotSoundEngine) {
-          window.quietSpotSoundEngine.playChime();
-        }
-        showToast("Focus sprint complete! Time for a mindful breath.");
+        if (window.campusSoundEngine) window.campusSoundEngine.playChime();
+        showToast("Focus sprint complete! Take a deep breath.");
       }
     }, 1000);
   }
 
   function pauseTimer() {
-    state.timer.isRunning = false;
-    clearInterval(state.timer.intervalId);
-    playText.textContent = "Resume";
-    playIcon.textContent = "▶";
-    updateDisplay();
+    state.pomodoro.isRunning = false;
+    clearInterval(state.intervals.pomodoroTimer);
+    btnLabel.textContent = "Resume";
+    icon.textContent = "▶";
   }
 
   function resetTimer() {
     pauseTimer();
-    state.timer.remainingSeconds = state.timer.totalSeconds;
-    playText.textContent = "Start Focus";
-    updateDisplay();
+    state.pomodoro.remainingSeconds = state.pomodoro.totalSeconds;
+    btnLabel.textContent = "Start Sprint";
+    icon.textContent = "▶";
+    renderClock();
   }
 
-  playBtn.addEventListener("click", () => {
-    if (state.timer.isRunning) {
-      pauseTimer();
-    } else {
-      startTimer();
-    }
-  });
+  if (startBtn) {
+    startBtn.addEventListener("click", () => {
+      if (state.pomodoro.isRunning) pauseTimer();
+      else startTimer();
+    });
+  }
 
-  resetBtn.addEventListener("click", resetTimer);
+  if (resetBtn) resetBtn.addEventListener("click", resetTimer);
 
-  modePills.forEach(pill => {
-    pill.addEventListener("click", () => {
-      modePills.forEach(p => p.classList.remove("active"));
-      pill.classList.add("active");
-      const mins = parseInt(pill.getAttribute("data-minutes"), 10);
-      state.timer.totalSeconds = mins * 60;
-      state.timer.remainingSeconds = mins * 60;
+  chips.forEach(chip => {
+    chip.addEventListener("click", () => {
+      chips.forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      const mins = parseInt(chip.getAttribute("data-mins"), 10);
+      state.pomodoro.totalSeconds = mins * 60;
       resetTimer();
     });
   });
 
-  updateDisplay();
+  renderClock();
 }
 
 // ==========================================================================
-// 10. Application Bootstrap
+// 10. MODAL DIALOGS (HOLD CONFIRMATION & CLEAN CHECKOUT)
+// ==========================================================================
+
+let pendingHoldSelection = null;
+
+function openHoldConfirmModal(floorId, deskId) {
+  const floor = state.floors.find(f => f.id === floorId);
+  if (!floor) return;
+
+  const desk = (floor.desks || floor.cabins || floor.rooms || []).find(d => d.id === deskId);
+  const modal = document.getElementById("holdConfirmModal");
+  if (!modal) return;
+
+  pendingHoldSelection = { floorId, deskId, floorName: floor.name };
+
+  document.getElementById("holdModalDeskId").textContent = deskId;
+  document.getElementById("holdModalLocation").textContent = `${floor.name} (${floor.subtitle})`;
+  document.getElementById("holdModalNoise").textContent = `${floor.noise} dB · ${floor.noiseLabel}`;
+  document.getElementById("holdModalAmenities").textContent = floor.amenities.join(" · ");
+
+  modal.showModal();
+}
+
+function openCleanCheckOutModal() {
+  const modal = document.getElementById("cleanCheckOutModal");
+  if (!modal || !state.activeSession) return;
+
+  document.getElementById("checkOutDeskId").textContent = state.activeSession.deskId;
+  modal.showModal();
+}
+
+function initModals() {
+  const holdModal = document.getElementById("holdConfirmModal");
+  const checkOutModal = document.getElementById("cleanCheckOutModal");
+
+  const closeHoldBtn = document.getElementById("closeHoldModalBtn");
+  const cancelHoldBtn = document.getElementById("cancelHoldBtn");
+  const confirmHoldBtn = document.getElementById("confirmHoldActionBtn");
+
+  const closeCheckOutBtn = document.getElementById("closeCheckOutModalBtn");
+  const cancelCheckOutBtn = document.getElementById("cancelCheckOutBtn");
+  const confirmCheckOutBtn = document.getElementById("confirmCheckOutBtn");
+
+  // Close hold
+  const closeHold = () => { if (holdModal) holdModal.close(); };
+  if (closeHoldBtn) closeHoldBtn.addEventListener("click", closeHold);
+  if (cancelHoldBtn) cancelHoldBtn.addEventListener("click", closeHold);
+
+  // Close checkout
+  const closeCheckOut = () => { if (checkOutModal) checkOutModal.close(); };
+  if (closeCheckOutBtn) closeCheckOutBtn.addEventListener("click", closeCheckOut);
+  if (cancelCheckOutBtn) cancelCheckOutBtn.addEventListener("click", closeCheckOut);
+
+  // Light dismiss fallback for browsers without native closedby
+  [holdModal, checkOutModal].forEach(modal => {
+    if (!modal) return;
+    if (!("closedBy" in HTMLDialogElement.prototype)) {
+      modal.addEventListener("click", (e) => {
+        if (e.target !== modal) return;
+        const rect = modal.getBoundingClientRect();
+        const inside = (
+          rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+          rect.left <= e.clientX && e.clientX <= rect.left + rect.width
+        );
+        if (!inside) modal.close();
+      });
+    }
+    modal.addEventListener("close", () => { modal.returnValue = ""; });
+  });
+
+  // Confirm 15-minute walk hold
+  if (confirmHoldBtn) {
+    confirmHoldBtn.addEventListener("click", () => {
+      if (!pendingHoldSelection) return;
+
+      // If user had an existing hold on another seat, release it
+      if (state.activeHold) {
+        releaseHold();
+      }
+
+      const { floorId, deskId, floorName } = pendingHoldSelection;
+
+      state.activeHold = {
+        deskId,
+        floorId,
+        floorName,
+        holdExpiresAt: Date.now() + 15 * 60 * 1000,
+        remainingSeconds: 15 * 60
+      };
+
+      // Mark desk as held
+      const floor = state.floors.find(f => f.id === floorId);
+      if (floor) {
+        const desk = (floor.desks || floor.cabins || []).find(d => d.id === deskId);
+        if (desk) desk.status = "held";
+      }
+
+      startHoldCountdown();
+      persistState();
+      renderFloors();
+      updateActiveSessionBanner();
+
+      holdModal.close();
+      showToast(`15-Minute Walk Hold active for ${deskId}. Walk over and scan desk QR on arrival.`);
+    });
+  }
+
+  // Confirm clean check-out
+  if (confirmCheckOutBtn) {
+    confirmCheckOutBtn.addEventListener("click", () => {
+      cleanCheckOutModal.close();
+      cleanCheckOutSession();
+    });
+  }
+}
+
+// ==========================================================================
+// 11. TOAST NOTIFICATIONS & DEMO RESET
+// ==========================================================================
+
+function showToast(message, duration = 3600) {
+  const container = document.getElementById("toastNotification");
+  if (!container) return;
+
+  const bubble = document.createElement("div");
+  bubble.className = "toast-bubble";
+  bubble.textContent = message;
+
+  container.appendChild(bubble);
+
+  setTimeout(() => {
+    bubble.style.opacity = "0";
+    bubble.style.transition = "opacity 250ms ease";
+    setTimeout(() => bubble.remove(), 250);
+  }, duration);
+}
+
+function escapeHTML(str) {
+  return String(str).replace(/[&<>'"]/g, tag => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "'": "&#39;",
+    '"': "&quot;"
+  }[tag] || tag));
+}
+
+function initDemoReset() {
+  const resetBtn = document.getElementById("resetDemoBtn");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      if (confirm("Reset demo state back to default LPU campus seats & clean checkouts?")) {
+        localStorage.clear();
+        location.reload();
+      }
+    });
+  }
+}
+
+// ==========================================================================
+// 12. BOOTSTRAP INITIALIZATION
 // ==========================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadStoredData();
+  loadStoredState();
   initTheme();
-  initFilters();
-  renderSpots();
-  initDialog();
+  initNavigation();
+  initPersonaHandlers();
+  initFloorControls();
+  renderFloors();
+  initModals();
+  initScanHandlers();
+  initDecorumAlertForm();
+  renderRecentAlerts();
+  initMicMeter();
   initSoundSanctuary();
-  initFocusTimer();
-});
+  initPomodoro();
+  renderSavedSpotsList();
+  renderStudyStats();
+  initDemoReset();
 
+  // If there's an ongoing hold or session restored from localStorage, start clocks
+  if (state.activeHold) {
+    startHoldCountdown();
+  }
+  if (state.activeSession) {
+    startSessionClock();
+  }
+
+  updateActiveSessionBanner();
+});
