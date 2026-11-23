@@ -322,7 +322,6 @@ footer p { margin: 0 0 6px; max-width: 54ch; }
         </span>
       </div>
       <ul class="spots" id="list"></ul>
-      <p class="note" id="sampleNote">The first entries are sample listings to show how the page works. Remove them, or add the places you actually know.</p>
     </section>
 
     <section id="sounds" aria-labelledby="h-sounds">
@@ -414,9 +413,9 @@ footer p { margin: 0 0 6px; max-width: 54ch; }
         <p>What the numbers mean for reading, writing and thinking.</p>
       </div>
       <div class="range3">
-        <div><div class="rg">20 to 30 dB</div><h3>Whisper quiet</h3><p>Archive rooms, empty chapels, a garden before the town wakes up. Good for slow reading and anything that needs your full attention.</p></div>
-        <div><div class="rg">30 to 42 dB</div><h3>Library calm</h3><p>Pages turning, soft footsteps, a distant hum. Suits long reading sessions, writing and revision.</p></div>
-        <div><div class="rg">42 to 52 dB</div><h3>Gentle murmur</h3><p>A café with low talk and soft music. Fine for sketching, coding, and loose first drafts.</p></div>
+        <div><div class="rg">20 to 30 dB</div><h3>Whisper quiet</h3><p>Very little sound at all. Suits slow reading and anything that needs full attention.</p></div>
+        <div><div class="rg">30 to 42 dB</div><h3>Library calm</h3><p>Quiet background sound. Suits long reading sessions, writing and revision.</p></div>
+        <div><div class="rg">42 to 52 dB</div><h3>Gentle murmur</h3><p>Steady background sound with some talk. Suits sketching, coding and rough first drafts.</p></div>
       </div>
 
       <table class="ref">
@@ -434,12 +433,6 @@ footer p { margin: 0 0 6px; max-width: 54ch; }
         </tbody>
       </table>
 
-      <ul class="tips">
-        <li><b>Go early.</b> Most places are at their quietest in the first hour after opening.</li>
-        <li><b>Sit away from doors.</b> Entrances, counters and printers are where the sound comes from.</li>
-        <li><b>Carry earplugs.</b> They do more than headphones for a lot less money.</li>
-        <li><b>Check the policy.</b> Rooms with a stated quiet rule stay quiet; rooms without one drift.</li>
-      </ul>
     </section>
   </div>
 </main>
@@ -453,7 +446,6 @@ footer p { margin: 0 0 6px; max-width: 54ch; }
     <div class="data-tools">
       <button class="btn small" id="exportBtn" type="button">Export my data</button>
       <button class="btn small" id="importBtn" type="button">Import data</button>
-      <button class="btn small" id="restoreBtn" type="button">Restore sample spots</button>
       <input type="file" id="importFile" accept="application/json" hidden>
     </div>
   </div>
@@ -552,16 +544,8 @@ footer p { margin: 0 0 6px; max-width: 54ch; }
     free: 'Free entry'
   };
 
-  var SEEDS = [
-    { id: 's1', name: 'Old Town Reading Room', cat: 'library', area: 'Old Town', db: 28, amen: ['policy', 'daylight', 'power', 'free'], desc: 'A long room with high windows and wooden tables. Phones stay in bags and staff will ask you to whisper. Tables by the windows are taken first, so arrive early.', order: 1 },
-    { id: 's2', name: 'Fernside Garden Corner', cat: 'garden', area: 'Riverside', db: 31, amen: ['outdoor', 'daylight', 'free'], desc: 'A walled corner at the back of a small park with benches under trees. Quietest on weekday mornings; the path on the far side gets busy with joggers after five.', order: 2 },
-    { id: 's3', name: 'The Paper Lantern Tea House', cat: 'cafe', area: 'Market Street', db: 41, amen: ['drinks', 'wifi', 'power'], desc: 'Low music, small tables and a no-calls rule. The upstairs room is calmer than the ground floor. Good for a couple of hours of writing.', order: 3 },
-    { id: 's4', name: 'Silent Floor, Central Library', cat: 'library', area: 'City Centre', db: 33, amen: ['policy', 'power', 'wifi', 'free'], desc: 'The top floor is kept silent and the carrels along the wall have lamps and sockets. The lower floors are noticeably louder, so go straight up.', order: 4 },
-    { id: 's5', name: 'Hollow Books', cat: 'bookstore', area: 'Station Road', db: 38, amen: ['drinks', 'free'], desc: 'Second-hand bookshop with a few armchairs at the back. No one minds if you read a chapter. Busy on Saturdays, near empty on weekday afternoons.', order: 5 },
-    { id: 's6', name: 'Booth Seven', cat: 'pod', area: 'Tech Park', db: 24, amen: ['power', 'wifi', 'policy'], desc: 'Sound-insulated booths bookable by the hour. Very still inside, with a fan for air. Book ahead for mornings.', order: 6 },
-    { id: 's7', name: 'Quarry Lane Cafe', cat: 'cafe', area: 'Eastside', db: 49, amen: ['drinks', 'wifi', 'outdoor'], desc: 'Warm, busy and friendly. Not silent, but the noise is a steady murmur that suits sketching and coding. Avoid the lunch hour.', order: 7 },
-    { id: 's8', name: 'Cloister Walk', cat: 'garden', area: 'University Quarter', db: 27, amen: ['outdoor', 'daylight', 'free'], desc: 'A covered stone walkway around a small lawn. Sound carries a little, but there is little to carry. Good for thinking, less so for laptops.', order: 8 }
-  ];
+  // No built-in places. Every spot comes from people using the app.
+  var SEEDS = [];
 
   var state = {
     q: '', cat: 'all', maxDb: 100, sort: 'quiet', savedOnly: false
@@ -837,7 +821,7 @@ footer p { margin: 0 0 6px; max-width: 54ch; }
     if (state.sort === 'name') {
       list.sort(function (a, b) { return a.name.localeCompare(b.name); });
     } else if (state.sort === 'new') {
-      // spots added by people carry a timestamp and count as newer than the built-in samples
+      // newest additions first
       list.sort(function (a, b) {
         var ua = a.added ? 1 : 0, ub = b.added ? 1 : 0;
         if (ua !== ub) return ub - ua;
@@ -869,7 +853,7 @@ footer p { margin: 0 0 6px; max-width: 54ch; }
       var msg;
       if (shared && !remote.loaded && !remote.failed) msg = '<b>Loading the shared list.</b>One moment.';
       else if (shared && !remote.loaded && remote.failed) msg = '<b>Could not reach the shared list.</b>Check your connection and press Refresh.';
-      else if (shared && !all.length) msg = '<b>No spots have been added yet.</b>Be the first. Use the Add a spot button at the top and tell other students where it is quiet.';
+      else if (!all.length) msg = '<b>No spots yet.</b>' + (shared ? 'Be the first. Use the Add a spot button at the top and tell other students where it is quiet.' : 'Use the Add a spot button at the top to list a place you know.');
       else if (state.savedOnly && !saved.length) msg = '<b>Nothing saved yet.</b>Use the Save button next to a spot to keep it here.';
       else msg = '<b>No spots match.</b>Try a higher noise limit, a different category, or fewer search words. You can also add a place you know.';
       html = '<li class="empty">' + msg + '</li>';
@@ -881,7 +865,6 @@ footer p { margin: 0 0 6px; max-width: 54ch; }
     $('#statSpots').textContent = all.length;
     $('#statQuiet').textContent = all.filter(function (s) { return spotDb(s).v <= 40; }).length;
     $('#statSaved').textContent = saved.filter(function (id) { return !!findSpot(id); }).length;
-    $('#sampleNote').hidden = shared || !all.some(function (s) { return /^s\d+$/.test(s.id); });
   }
 
   $('#cats').addEventListener('click', function (e) {
@@ -1516,10 +1499,6 @@ footer p { margin: 0 0 6px; max-width: 54ch; }
     };
     r.readAsText(f);
   });
-  $('#restoreBtn').addEventListener('click', function () {
-    store.set('qs.hidden', []);
-    render(); toast('Sample spots restored');
-  });
 
   /* ---------- install as an app ---------- */
   var deferredInstall = null;
@@ -1559,7 +1538,6 @@ footer p { margin: 0 0 6px; max-width: 54ch; }
   if (shared) {
     $('#modeNote').textContent = 'This list is shared. Every student using the app sees the same places and the same averaged noise levels, and anyone can add a spot or a reading.';
     $('#importBtn').hidden = true;
-    $('#restoreBtn').hidden = true;
     $('#footNote').textContent = 'Quiet Spot is a shared list. Spots and readings you add are visible to everyone. Your saved spots, timer and sound settings stay on this device.';
     var cached = store.get('qs.cache', null);
     if (cached && cached.spots) {
