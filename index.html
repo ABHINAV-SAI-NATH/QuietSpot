@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- MANDATORY: Declare support for both light and dark themes to prevent FOUC -->
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="QuietSpot (P06: A Seat to Study) : Lovely Professional University Central Library & Academic Block quiet study space locator, 15-min walk-hold, QR check-in, and anonymous decorum reporting.">
+  <meta name="description"
+    content="QuietSpot (P06: A Seat to Study) : Lovely Professional University Central Library & Academic Block quiet study space locator, 15-min walk-hold, QR check-in, and anonymous decorum reporting.">
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a">
 
   <title>QuietSpot · P06: A Seat to Study (LPU)</title>
-  
+
   <link rel="stylesheet" href="styles.css">
   <script defer src="app.js"></script>
 </head>
+
 <body>
   <!-- Honest Institutional Status Strip -->
   <div class="top-status-strip">
@@ -35,7 +38,8 @@
         <a href="#map-view" class="brand-link" id="brandLogoBtn" aria-label="QuietSpot Home">
           <svg class="brand-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <rect width="32" height="32" rx="8" fill="#16A34A" fill-opacity="0.12" />
-            <path d="M16 6C11.58 6 8 9.58 8 14C8 19.5 16 26 16 26C16 26 24 19.5 24 14C24 9.58 20.42 6 16 6Z" stroke="#16A34A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M16 6C11.58 6 8 9.58 8 14C8 19.5 16 26 16 26C16 26 24 19.5 24 14C24 9.58 20.42 6 16 6Z"
+              stroke="#16A34A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
             <circle cx="16" cy="13" r="2.5" fill="#16A34A" />
             <path d="M11 26H21" stroke="#16A34A" stroke-width="2" stroke-linecap="round" />
           </svg>
@@ -50,14 +54,18 @@
       <nav class="desktop-nav" aria-label="Main Navigation">
         <button type="button" class="nav-tab-btn active" data-tab="map-view">
           <svg viewBox="0 0 20 20" fill="currentColor" class="tab-icon" aria-hidden="true">
-            <path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.553.894l4 2A1 1 0 007 16V3.172l-3.293-3.293a1 1 0 00-.707.121zM18 4a1 1 0 00-1.447-.894l-4 2A1 1 0 0012 6v12.828l3.293-3.293A1 1 0 0016 15V4a1 1 0 002 0z" clip-rule="evenodd" />
+            <path fill-rule="evenodd"
+              d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.553.894l4 2A1 1 0 007 16V3.172l-3.293-3.293a1 1 0 00-.707.121zM18 4a1 1 0 00-1.447-.894l-4 2A1 1 0 0012 6v12.828l3.293-3.293A1 1 0 0016 15V4a1 1 0 002 0z"
+              clip-rule="evenodd" />
           </svg>
           <span>Map &amp; Hold</span>
         </button>
 
         <button type="button" class="nav-tab-btn nav-qr-pill" data-tab="scan-view" id="navScanPill">
           <svg viewBox="0 0 20 20" fill="currentColor" class="tab-icon" aria-hidden="true">
-            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2h1v1h-1V5zm-4 7a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1zm4 1a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1h-2zm-3 3a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1z" clip-rule="evenodd" />
+            <path fill-rule="evenodd"
+              d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2h1v1h-1V5zm-4 7a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1zm4 1a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1h-2zm-3 3a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1z"
+              clip-rule="evenodd" />
           </svg>
           <span>Scan Desk QR</span>
           <span class="nav-pill-badge" id="navQrStatusBadge">Ready</span>
@@ -65,7 +73,9 @@
 
         <button type="button" class="nav-tab-btn" data-tab="alert-view">
           <svg viewBox="0 0 20 20" fill="currentColor" class="tab-icon" aria-hidden="true">
-            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            <path fill-rule="evenodd"
+              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+              clip-rule="evenodd" />
           </svg>
           <span>Quiet Alert</span>
         </button>
@@ -87,8 +97,10 @@
         </button>
 
         <!-- Theme Toggle Button -->
-        <button type="button" id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle light/dark mode" title="Switch Theme">
-          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <button type="button" id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle light/dark mode"
+          title="Switch Theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
             <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -99,7 +111,8 @@
             <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
           </svg>
-          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </button>
@@ -127,7 +140,8 @@
         <button type="button" id="bannerPrimaryActionBtn" class="btn btn-sm btn-action">
           Scan Desk QR
         </button>
-        <button type="button" id="bannerSecondaryActionBtn" class="btn btn-sm btn-ghost" title="Cancel hold or check out">
+        <button type="button" id="bannerSecondaryActionBtn" class="btn btn-sm btn-ghost"
+          title="Cancel hold or check out">
           Release
         </button>
       </div>
@@ -136,7 +150,7 @@
 
   <!-- Main View Container (Tab Views) -->
   <main id="mainContainer" class="main-content">
-    
+
     <!-- ===================================================================
          TAB 1: MAP & HOLD (Pre-Arrival Discovery & 15-Min Walk Hold)
          =================================================================== -->
@@ -146,7 +160,8 @@
           <span class="kicker-tag">Live Campus Seat Discovery &middot; LPU Central Library</span>
           <h1 id="mapViewTitle" class="page-title">Find &amp; Hold a Seat to Study</h1>
           <p class="page-desc">
-            Reserve an open quiet seat before leaving your hostel or class. Holds last <strong>15 minutes</strong> for your walk across campus.
+            Reserve an open quiet seat before leaving your hostel or class. Holds last <strong>15 minutes</strong> for
+            your walk across campus.
           </p>
         </div>
 
@@ -198,16 +213,15 @@
       <div class="controls-toolbar" role="search" aria-label="Filter campus study zones">
         <div class="search-field-wrapper">
           <svg class="search-svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            <path fill-rule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clip-rule="evenodd" />
           </svg>
-          <input 
-            type="search" 
-            id="zoneSearchInput" 
+          <input type="search" id="zoneSearchInput"
             placeholder="Search floor, zone (e.g., '5th floor', 'power', 'cabins', 'discussion')..."
-            aria-label="Search study spaces"
-            autocomplete="off"
-          >
-          <button type="button" id="clearZoneSearchBtn" class="clear-input-btn" aria-label="Clear search" hidden>&times;</button>
+            aria-label="Search study spaces" autocomplete="off">
+          <button type="button" id="clearZoneSearchBtn" class="clear-input-btn" aria-label="Clear search"
+            hidden>&times;</button>
         </div>
 
         <!-- Filter Chips with CP6 Fix ISS-03 (Power Outlets Filter) -->
@@ -247,7 +261,8 @@
           <span class="kicker-tag text-blue">Arrival Verification &middot; CP6 Fix ISS-02</span>
           <h1 id="scanViewTitle" class="page-title">Scan Desk QR Check-In</h1>
           <p class="page-desc">
-            Verify your physical arrival at the library desk. Scanning establishes a digital desk boundary to deter bag-sprawling and claims your seat.
+            Verify your physical arrival at the library desk. Scanning establishes a digital desk boundary to deter
+            bag-sprawling and claims your seat.
           </p>
         </div>
       </div>
@@ -304,7 +319,9 @@
             <!-- Simulated One-Tap Scan Trigger -->
             <button type="button" id="triggerScanActionBtn" class="btn btn-primary btn-block btn-lg">
               <svg viewBox="0 0 20 20" fill="currentColor" class="btn-svg" aria-hidden="true">
-                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2h1v1h-1V5zm-4 7a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1zm4 1a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1h-2zm-3 3a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1z" clip-rule="evenodd" />
+                <path fill-rule="evenodd"
+                  d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2h1v1h-1V5zm-4 7a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1zm4 1a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1h-2zm-3 3a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1z"
+                  clip-rule="evenodd" />
               </svg>
               <span id="scanBtnText">Simulate Desk QR Scan (Check In to 5F-B04)</span>
             </button>
@@ -335,7 +352,8 @@
             <div class="state-icon-circle" aria-hidden="true">🪑</div>
             <h3>Ready to Claim a Desk</h3>
             <p>
-              Hold a desk from the <strong>Map &amp; Hold</strong> tab or tap <strong>Simulate Desk QR Scan</strong> above to instantly check in to a free library seat.
+              Hold a desk from the <strong>Map &amp; Hold</strong> tab or tap <strong>Simulate Desk QR Scan</strong>
+              above to instantly check in to a free library seat.
             </p>
             <button type="button" class="btn btn-secondary" id="jumpToMapBtn">
               Browse Floor Map
@@ -386,7 +404,8 @@
 
               <div class="break-policy-note">
                 <small>
-                  <strong>Fair Use Policy:</strong> Break hold secures your seat for 20 minutes while you get water or stretch. If unreturned, desk automatically re-opens for campus peers.
+                  <strong>Fair Use Policy:</strong> Break hold secures your seat for 20 minutes while you get water or
+                  stretch. If unreturned, desk automatically re-opens for campus peers.
                 </small>
               </div>
             </div>
@@ -404,7 +423,8 @@
           <span class="kicker-tag text-emerald">Non-Confrontational Decorum &middot; CP6 Fix ISS-04</span>
           <h1 id="alertViewTitle" class="page-title">Quiet Alert &middot; Anonymous Decorum</h1>
           <p class="page-desc">
-            Report loud disruptions, persistent phone calls, or bag-sprawling silently to the floor supervisor without face-to-face conflict.
+            Report loud disruptions, persistent phone calls, or bag-sprawling silently to the floor supervisor without
+            face-to-face conflict.
           </p>
         </div>
       </div>
@@ -413,14 +433,15 @@
       <div class="trust-banner" role="note">
         <div class="trust-shield-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="M9 12l2 2 4-4"/>
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <path d="M9 12l2 2 4-4" />
           </svg>
         </div>
         <div class="trust-text">
           <strong>100% Anonymous &middot; Zero Student Credentials Collected</strong>
           <p>
-            No Student ID, registration roll number, name, or institutional email is ever asked, logged, or shared with floor staff. Reports are completely sanitized.
+            No Student ID, registration roll number, name, or institutional email is ever asked, logged, or shared with
+            floor staff. Reports are completely sanitized.
           </p>
         </div>
       </div>
@@ -449,7 +470,8 @@
             <!-- Specific Desk or Area (Optional) -->
             <div class="form-group">
               <label for="alertDeskInput">Approximate Desk or Row (Optional)</label>
-              <input type="text" id="alertDeskInput" placeholder="e.g. Near Window Row B, or Desk 5F-B02" class="clean-input">
+              <input type="text" id="alertDeskInput" placeholder="e.g. Near Window Row B, or Desk 5F-B02"
+                class="clean-input">
             </div>
 
             <!-- One-Tap Disruption Cards -->
@@ -500,7 +522,8 @@
 
             <div class="form-group">
               <label for="alertOptionalNotes">Additional Context (Optional)</label>
-              <textarea id="alertOptionalNotes" rows="2" class="clean-textarea" placeholder="Brief note for the supervisor (e.g., 'Group has been speaking on speakerphone for 10 mins')"></textarea>
+              <textarea id="alertOptionalNotes" rows="2" class="clean-textarea"
+                placeholder="Brief note for the supervisor (e.g., 'Group has been speaking on speakerphone for 10 mins')"></textarea>
             </div>
 
             <button type="submit" id="submitAlertBtn" class="btn btn-primary btn-block btn-lg">
@@ -537,8 +560,9 @@
                 <span class="live-db-val text-emerald" id="liveMeterDbVal">36 dB</span>
                 <span class="db-unit-label">&plusmn;5 dB Ambient Guide</span>
               </div>
-              <div class="db-classification-badge" id="liveMeterClassBadge">Library Calm &middot; Optimal for Study</div>
-              
+              <div class="db-classification-badge" id="liveMeterClassBadge">Library Calm &middot; Optimal for Study
+              </div>
+
               <!-- Visual Decibel Bar -->
               <div class="meter-bar-track">
                 <div class="meter-bar-fill" id="meterBarFill" style="inline-size: 42%;"></div>
@@ -556,7 +580,8 @@
               <span id="meterBtnText">Start 6-Second Room Measurement</span>
             </button>
             <small class="meter-disclaimer">
-              *Note: Uses Web Audio RMS estimation. If microphone permission is denied, simulated telemetry fallback activates.
+              *Note: Uses Web Audio RMS estimation. If microphone permission is denied, simulated telemetry fallback
+              activates.
             </small>
           </div>
 
@@ -610,7 +635,8 @@
           <span class="kicker-tag text-purple">Personalization &amp; Evaluator Inspector</span>
           <h1 id="routineViewTitle" class="page-title">My Study Routine &amp; Tools</h1>
           <p class="page-desc">
-            Personalize your study habits, switch presentation personas, play offline ambient masking audio, and inspect project research traceability.
+            Personalize your study habits, switch presentation personas, play offline ambient masking audio, and inspect
+            project research traceability.
           </p>
         </div>
       </div>
@@ -638,7 +664,8 @@
               </div>
             </div>
             <p class="persona-bio">
-              "I come directly after 5:00 PM classes and need a guaranteed quiet desk with a power socket for coding sprints. Hate losing desks to bag reservation."
+              "I come directly after 5:00 PM classes and need a guaranteed quiet desk with a power socket for coding
+              sprints. Hate losing desks to bag reservation."
             </p>
             <ul class="persona-traits">
               <li><strong>Favorite Zone:</strong> 5th Floor Deep Focus</li>
@@ -656,7 +683,8 @@
               </div>
             </div>
             <p class="persona-bio">
-              "I alternate between solo study cabins and discussion rooms with my project group. Need to know when DR rooms are open without walking up and down stairs."
+              "I alternate between solo study cabins and discussion rooms with my project group. Need to know when DR
+              rooms are open without walking up and down stairs."
             </p>
             <ul class="persona-traits">
               <li><strong>Favorite Zone:</strong> 4th Floor &amp; Discussion Rooms</li>
@@ -679,7 +707,8 @@
                 <strong>Silent Co-Study Mode</strong>
                 <span class="badge-new">Community</span>
               </div>
-              <p>Highlight desks near other quiet solo studiers to feel less isolated while maintaining complete silence.</p>
+              <p>Highlight desks near other quiet solo studiers to feel less isolated while maintaining complete
+                silence.</p>
             </div>
             <label class="switch" for="coStudyToggle">
               <input type="checkbox" id="coStudyToggle">
@@ -738,7 +767,8 @@
                   <span class="sound-emoji">🌧️</span>
                   <span>Gentle Rain</span>
                 </button>
-                <input type="range" class="sound-range" id="rainVolumeRange" min="0" max="100" value="40" aria-label="Rain volume">
+                <input type="range" class="sound-range" id="rainVolumeRange" min="0" max="100" value="40"
+                  aria-label="Rain volume">
               </div>
 
               <div class="sound-slider-row" data-sound="pink">
@@ -746,7 +776,8 @@
                   <span class="sound-emoji">〰️</span>
                   <span>Pink Noise</span>
                 </button>
-                <input type="range" class="sound-range" id="pinkVolumeRange" min="0" max="100" value="35" aria-label="Pink noise volume">
+                <input type="range" class="sound-range" id="pinkVolumeRange" min="0" max="100" value="35"
+                  aria-label="Pink noise volume">
               </div>
 
               <div class="sound-slider-row" data-sound="breeze">
@@ -754,7 +785,8 @@
                   <span class="sound-emoji">🍃</span>
                   <span>Forest Wind</span>
                 </button>
-                <input type="range" class="sound-range" id="breezeVolumeRange" min="0" max="100" value="40" aria-label="Wind volume">
+                <input type="range" class="sound-range" id="breezeVolumeRange" min="0" max="100" value="40"
+                  aria-label="Wind volume">
               </div>
 
               <div class="sound-slider-row" data-sound="drone">
@@ -762,7 +794,8 @@
                   <span class="sound-emoji">🧘</span>
                   <span>Calm Drone (432Hz)</span>
                 </button>
-                <input type="range" class="sound-range" id="droneVolumeRange" min="0" max="100" value="30" aria-label="Drone volume">
+                <input type="range" class="sound-range" id="droneVolumeRange" min="0" max="100" value="30"
+                  aria-label="Drone volume">
               </div>
             </div>
 
@@ -821,19 +854,23 @@
                 <ul class="fix-list">
                   <li>
                     <strong>ISS-01 (Floor Card Hold CTA):</strong>
-                    <span>Students in user tests tapped floor headers expecting to reserve. Added high-contrast primary <em>"Hold Best Quiet Seat (15 Min)"</em> buttons directly on every floor card.</span>
+                    <span>Students in user tests tapped floor headers expecting to reserve. Added high-contrast primary
+                      <em>"Hold Best Quiet Seat (15 Min)"</em> buttons directly on every floor card.</span>
                   </li>
                   <li>
                     <strong>ISS-02 (Scan Desk QR Discoverability):</strong>
-                    <span>Physical check-in was buried in nested menus. Elevated <em>"Scan Desk QR"</em> into a persistent top nav pill + bottom mobile nav bar.</span>
+                    <span>Physical check-in was buried in nested menus. Elevated <em>"Scan Desk QR"</em> into a
+                      persistent top nav pill + bottom mobile nav bar.</span>
                   </li>
                   <li>
                     <strong>ISS-03 (Power Socket Visibility):</strong>
-                    <span>Laptops dying during study sprints caused drop-offs. Added a dedicated <em>"⚡ Power Outlets Only"</em> filter chip and visual socket badges on desks.</span>
+                    <span>Laptops dying during study sprints caused drop-offs. Added a dedicated <em>"⚡ Power Outlets
+                        Only"</em> filter chip and visual socket badges on desks.</span>
                   </li>
                   <li>
                     <strong>ISS-04 (Decorum Anonymity Fear):</strong>
-                    <span>Students feared retaliation or discipline if their ID was shown. Enforced <em>100% anonymous reporting</em> with a prominent trust badge and zero credential inputs.</span>
+                    <span>Students feared retaliation or discipline if their ID was shown. Enforced <em>100% anonymous
+                        reporting</em> with a prominent trust badge and zero credential inputs.</span>
                   </li>
                 </ul>
               </div>
@@ -843,15 +880,18 @@
                 <h4 class="col-heading text-blue">Primary Fieldwork &amp; Student Interviews</h4>
                 <div class="interview-callouts">
                   <div class="quote-card">
-                    <em>"I walked all the way from Boys Hostel 4 to 5th floor only to find every single desk occupied with water bottles and empty notebooks."</em>
+                    <em>"I walked all the way from Boys Hostel 4 to 5th floor only to find every single desk occupied
+                      with water bottles and empty notebooks."</em>
                     <span class="quote-cite">Interview #2 (3rd Year B.Tech Student, Central Library)</span>
                   </div>
                   <div class="quote-card">
-                    <em>"Group study rooms are either locked or full, so groups sit in silent zones and whisper. Telling them to be quiet is awkward."</em>
+                    <em>"Group study rooms are either locked or full, so groups sit in silent zones and whisper. Telling
+                      them to be quiet is awkward."</em>
                     <span class="quote-cite">Interview #5 (2nd Year MBA Student, Reading Wing)</span>
                   </div>
                   <div class="quote-card">
-                    <em>"During midterms, students sit on Block 34 staircases because nobody knows which rooms on other floors are empty."</em>
+                    <em>"During midterms, students sit on Block 34 staircases because nobody knows which rooms on other
+                      floors are empty."</em>
                     <span class="quote-cite">Field Observation #1 (Academic Block 34, 4:45 PM)</span>
                   </div>
                 </div>
@@ -874,7 +914,7 @@
   <!-- ===================================================================
        MODALS: CONFIRM WALK HOLD & CLEAN CHECKOUT
        =================================================================== -->
-  
+
   <!-- Modal 1: Confirm 15-Minute Walk Hold -->
   <!-- MANDATORY: closedby="any" per modern guidance for declarative light-dismiss and ESC dismissal -->
   <dialog id="holdConfirmModal" class="app-dialog" closedby="any" aria-labelledby="holdModalTitle">
@@ -886,7 +926,8 @@
 
       <h2 id="holdModalTitle" class="dialog-heading">Hold Seat at LPU Central Library?</h2>
       <p class="dialog-sub">
-        QuietSpot will protect this seat for <strong>15 minutes</strong> while you walk over from your hostel or academic block.
+        QuietSpot will protect this seat for <strong>15 minutes</strong> while you walk over from your hostel or
+        academic block.
       </p>
 
       <div class="hold-details-card">
@@ -914,7 +955,8 @@
 
       <div class="hold-rules-box">
         <small>
-          <strong>Campus Decorum Rule:</strong> Arrive at your desk and tap <em>"Scan Desk QR"</em> before the timer expires to secure your full session.
+          <strong>Campus Decorum Rule:</strong> Arrive at your desk and tap <em>"Scan Desk QR"</em> before the timer
+          expires to secure your full session.
         </small>
       </div>
 
@@ -932,12 +974,14 @@
     <div class="dialog-inner">
       <div class="dialog-top-row">
         <span class="dialog-kicker text-blue">Responsible Desk Hand-Off</span>
-        <button type="button" class="dialog-close-btn" id="closeCheckOutModalBtn" aria-label="Close dialog">&times;</button>
+        <button type="button" class="dialog-close-btn" id="closeCheckOutModalBtn"
+          aria-label="Close dialog">&times;</button>
       </div>
 
       <h2 id="checkoutModalTitle" class="dialog-heading">Clean Check-Out Confirmation</h2>
       <p class="dialog-sub">
-        Thank you for studying at <strong id="checkOutDeskId">5F-B04</strong>! Please complete our quick cleanliness hand-off:
+        Thank you for studying at <strong id="checkOutDeskId">5F-B04</strong>! Please complete our quick cleanliness
+        hand-off:
       </p>
 
       <div class="clean-checklist-box">
@@ -968,7 +1012,9 @@
   <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
     <button type="button" class="mobile-nav-btn active" data-tab="map-view">
       <svg viewBox="0 0 20 20" fill="currentColor" class="mob-icon" aria-hidden="true">
-        <path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.553.894l4 2A1 1 0 007 16V3.172l-3.293-3.293a1 1 0 00-.707.121zM18 4a1 1 0 00-1.447-.894l-4 2A1 1 0 0012 6v12.828l3.293-3.293A1 1 0 0016 15V4a1 1 0 002 0z" clip-rule="evenodd" />
+        <path fill-rule="evenodd"
+          d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.553.894l4 2A1 1 0 007 16V3.172l-3.293-3.293a1 1 0 00-.707.121zM18 4a1 1 0 00-1.447-.894l-4 2A1 1 0 0012 6v12.828l3.293-3.293A1 1 0 0016 15V4a1 1 0 002 0z"
+          clip-rule="evenodd" />
       </svg>
       <span>Map &amp; Hold</span>
     </button>
@@ -976,7 +1022,9 @@
     <button type="button" class="mobile-nav-btn mob-qr-btn" data-tab="scan-view">
       <div class="mob-qr-circle">
         <svg viewBox="0 0 20 20" fill="currentColor" class="mob-icon qr-svg" aria-hidden="true">
-          <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2h1v1h-1V5zm-4 7a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1zm4 1a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1h-2zm-3 3a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1z" clip-rule="evenodd" />
+          <path fill-rule="evenodd"
+            d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2h1v1h-1V5zm-4 7a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1zm4 1a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1h-2zm-3 3a1 1 0 011-1h1a1 1 0 011 1v1a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1z"
+            clip-rule="evenodd" />
         </svg>
       </div>
       <span>Scan QR</span>
@@ -984,7 +1032,9 @@
 
     <button type="button" class="mobile-nav-btn" data-tab="alert-view">
       <svg viewBox="0 0 20 20" fill="currentColor" class="mob-icon" aria-hidden="true">
-        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        <path fill-rule="evenodd"
+          d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+          clip-rule="evenodd" />
       </svg>
       <span>Quiet Alert</span>
     </button>
@@ -1009,7 +1059,8 @@
           <span class="footer-brand-subtitle">: P06: A Seat to Study</span>
         </div>
         <p class="footer-context">
-          Lovely Professional University (LPU) &middot; Design Thinking &amp; Innovation Project &middot; Central Library &amp; Academic Block 34 Case Study.
+          Lovely Professional University (LPU) &middot; Design Thinking &amp; Innovation Project &middot; Central
+          Library &amp; Academic Block 34 Case Study.
         </p>
         <p class="footer-team">
           Team G6 (Section K3P26HK) &middot; Johan Samuel Reji, Abhinav Sai Nath, Diya, Daksh Phartiyal.
@@ -1017,11 +1068,13 @@
       </div>
 
       <div class="footer-actions-block">
-        <button type="button" id="resetDemoBtn" class="btn btn-sm btn-secondary" title="Clears localStorage and resets campus desks to clean state">
+        <button type="button" id="resetDemoBtn" class="btn btn-sm btn-secondary"
+          title="Clears localStorage and resets campus desks to clean state">
           Reset Demo State
         </button>
       </div>
     </div>
   </footer>
 </body>
+
 </html>
