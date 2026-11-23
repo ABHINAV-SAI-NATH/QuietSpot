@@ -1,8 +1,8 @@
 /**
- * QuietSpot v2.0 (P06 — A Seat to Study)
+ * QuietSpot (P06: A Seat to Study)
  * Institution Context: Lovely Professional University (LPU)
  * Central Campus Library & Academic Block Study Spaces
- * Team G6 (K3P26HK) — Johan Samuel Reji, Abhinav Sai Nath, Diya, Daksh Phartiyal
+ * Team G6 (K3P26HK) : Johan Samuel Reji, Abhinav Sai Nath, Diya, Daksh Phartiyal
  */
 
 // ==========================================================================
@@ -12,7 +12,7 @@
 const INITIAL_CAMPUS_FLOORS = [
   {
     id: "floor-5",
-    name: "Central Library — 5th Floor",
+    name: "Central Library: 5th Floor",
     subtitle: "Deep Focus Silent Zone",
     category: "silent",
     noise: 34,
@@ -37,7 +37,7 @@ const INITIAL_CAMPUS_FLOORS = [
   },
   {
     id: "floor-4",
-    name: "Central Library — 4th Floor",
+    name: "Central Library: 4th Floor",
     subtitle: "Quiet Reading & Reference Wing",
     category: "silent",
     noise: 38,
@@ -62,7 +62,7 @@ const INITIAL_CAMPUS_FLOORS = [
   },
   {
     id: "floor-2",
-    name: "Central Library — 2nd Floor",
+    name: "Central Library: 2nd Floor",
     subtitle: "Solo Study Cabins & Dissertation Nooks",
     category: "silent",
     noise: 42,
@@ -84,7 +84,7 @@ const INITIAL_CAMPUS_FLOORS = [
   },
   {
     id: "floor-dr",
-    name: "Central Library — Discussion Rooms & Basement",
+    name: "Central Library: Discussion Rooms & Basement",
     subtitle: "Collaborative Study & Peer Sprint Zone",
     category: "discussion",
     noise: 54,
@@ -102,7 +102,7 @@ const INITIAL_CAMPUS_FLOORS = [
   },
   {
     id: "floor-block34",
-    name: "Academic Block 34 — Study Corners",
+    name: "Academic Block 34: Study Corners",
     subtitle: "Between-Class Quick Overflow Sanctuaries",
     category: "silent",
     noise: 46,
@@ -123,9 +123,9 @@ const INITIAL_CAMPUS_FLOORS = [
 
 // Initial Anonymized Decorum Activity Feed
 const INITIAL_DECORUM_ALERTS = [
-  { id: "alert-1", time: "12 mins ago", floor: "5th Floor — Deep Focus", category: "Loud Talking in Silent Zone", status: "Supervisor Dispatched" },
-  { id: "alert-2", time: "34 mins ago", floor: "4th Floor — Reading Wing", category: "Table / Bag Encroachment", status: "Resolved & Cleared" },
-  { id: "alert-3", time: "1 hour ago", floor: "2nd Floor — Study Cabins", category: "Cabin Video Filming / Calls", status: "Resolved & Cleared" }
+  { id: "alert-1", time: "12 mins ago", floor: "5th Floor: Deep Focus", category: "Loud Talking in Silent Zone", status: "Supervisor Dispatched" },
+  { id: "alert-2", time: "34 mins ago", floor: "4th Floor: Reading Wing", category: "Table / Bag Encroachment", status: "Resolved & Cleared" },
+  { id: "alert-3", time: "1 hour ago", floor: "2nd Floor: Study Cabins", category: "Cabin Video Filming / Calls", status: "Resolved & Cleared" }
 ];
 
 // Student Personas
@@ -192,19 +192,19 @@ const state = {
 
 function loadStoredState() {
   try {
-    const savedFloors = localStorage.getItem("quietspot_v2_floors");
+    const savedFloors = localStorage.getItem("quietspot_floors");
     state.floors = savedFloors ? JSON.parse(savedFloors) : JSON.parse(JSON.stringify(INITIAL_CAMPUS_FLOORS));
 
-    const savedAlerts = localStorage.getItem("quietspot_v2_alerts");
+    const savedAlerts = localStorage.getItem("quietspot_alerts");
     state.decorumAlerts = savedAlerts ? JSON.parse(savedAlerts) : [...INITIAL_DECORUM_ALERTS];
 
-    const savedPersona = localStorage.getItem("quietspot_v2_persona");
+    const savedPersona = localStorage.getItem("quietspot_persona");
     if (savedPersona && PERSONAS[savedPersona]) state.persona = savedPersona;
 
-    const savedBookmarks = localStorage.getItem("quietspot_v2_bookmarks");
+    const savedBookmarks = localStorage.getItem("quietspot_bookmarks");
     if (savedBookmarks) state.savedFloorIds = new Set(JSON.parse(savedBookmarks));
 
-    const savedHold = localStorage.getItem("quietspot_v2_active_hold");
+    const savedHold = localStorage.getItem("quietspot_active_hold");
     if (savedHold) {
       const parsedHold = JSON.parse(savedHold);
       const remaining = Math.max(0, Math.floor((parsedHold.holdExpiresAt - Date.now()) / 1000));
@@ -212,11 +212,11 @@ function loadStoredState() {
         parsedHold.remainingSeconds = remaining;
         state.activeHold = parsedHold;
       } else {
-        localStorage.removeItem("quietspot_v2_active_hold");
+        localStorage.removeItem("quietspot_active_hold");
       }
     }
 
-    const savedSession = localStorage.getItem("quietspot_v2_active_session");
+    const savedSession = localStorage.getItem("quietspot_active_session");
     if (savedSession) {
       const parsedSession = JSON.parse(savedSession);
       parsedSession.elapsedSeconds = Math.max(0, Math.floor((Date.now() - parsedSession.checkedInAt) / 1000));
@@ -229,7 +229,7 @@ function loadStoredState() {
       state.activeSession = parsedSession;
     }
 
-    const savedStats = localStorage.getItem("quietspot_v2_stats");
+    const savedStats = localStorage.getItem("quietspot_stats");
     if (savedStats) state.stats = JSON.parse(savedStats);
 
   } catch (err) {
@@ -241,22 +241,22 @@ function loadStoredState() {
 
 function persistState() {
   try {
-    localStorage.setItem("quietspot_v2_floors", JSON.stringify(state.floors));
-    localStorage.setItem("quietspot_v2_alerts", JSON.stringify(state.decorumAlerts));
-    localStorage.setItem("quietspot_v2_persona", state.persona);
-    localStorage.setItem("quietspot_v2_bookmarks", JSON.stringify([...state.savedFloorIds]));
-    localStorage.setItem("quietspot_v2_stats", JSON.stringify(state.stats));
+    localStorage.setItem("quietspot_floors", JSON.stringify(state.floors));
+    localStorage.setItem("quietspot_alerts", JSON.stringify(state.decorumAlerts));
+    localStorage.setItem("quietspot_persona", state.persona);
+    localStorage.setItem("quietspot_bookmarks", JSON.stringify([...state.savedFloorIds]));
+    localStorage.setItem("quietspot_stats", JSON.stringify(state.stats));
 
     if (state.activeHold) {
-      localStorage.setItem("quietspot_v2_active_hold", JSON.stringify(state.activeHold));
+      localStorage.setItem("quietspot_active_hold", JSON.stringify(state.activeHold));
     } else {
-      localStorage.removeItem("quietspot_v2_active_hold");
+      localStorage.removeItem("quietspot_active_hold");
     }
 
     if (state.activeSession) {
-      localStorage.setItem("quietspot_v2_active_session", JSON.stringify(state.activeSession));
+      localStorage.setItem("quietspot_active_session", JSON.stringify(state.activeSession));
     } else {
-      localStorage.removeItem("quietspot_v2_active_session");
+      localStorage.removeItem("quietspot_active_session");
     }
   } catch (err) {
     console.warn("Error persisting state:", err);
@@ -319,7 +319,7 @@ function initTheme() {
   const toggleBtn = document.getElementById("themeToggleBtn");
   const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
-  const savedTheme = localStorage.getItem("quietspot_v2_theme") || "auto";
+  const savedTheme = localStorage.getItem("quietspot_theme") || "auto";
 
   function applyTheme(theme) {
     if (theme === "auto") {
@@ -329,11 +329,11 @@ function initTheme() {
       root.setAttribute("data-theme", theme);
       toggleBtn.setAttribute("title", `Theme: ${theme.charAt(0).toUpperCase() + theme.slice(1)}`);
     }
-    localStorage.setItem("quietspot_v2_theme", theme);
+    localStorage.setItem("quietspot_theme", theme);
   }
 
   toggleBtn.addEventListener("click", () => {
-    const current = localStorage.getItem("quietspot_v2_theme") || "auto";
+    const current = localStorage.getItem("quietspot_theme") || "auto";
     if (current === "auto") {
       applyTheme(systemPrefersDark.matches ? "light" : "dark");
     } else if (current === "light") {
@@ -344,7 +344,7 @@ function initTheme() {
   });
 
   systemPrefersDark.addEventListener("change", () => {
-    const current = localStorage.getItem("quietspot_v2_theme") || "auto";
+    const current = localStorage.getItem("quietspot_theme") || "auto";
     if (current === "auto") applyTheme("auto");
   });
 
@@ -1191,7 +1191,7 @@ function initDecorumAlertForm() {
       form.reset();
       chips[0].click();
 
-      showToast("Floor supervisor silently notified. 100% anonymous — no credentials sent.");
+      showToast("Floor supervisor silently notified. 100% anonymous: no credentials sent.");
     });
   }
 }

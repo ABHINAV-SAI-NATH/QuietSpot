@@ -1,4 +1,4 @@
-# QuietSpot v2.0 — P06: "A Seat to Study"
+# QuietSpot : P06: "A Seat to Study"
 
 > **Design Thinking & Innovation Project**  
 > **Course / Section:** K3P26HK &middot; **Project Code:** P06  
@@ -13,7 +13,7 @@
 
 Modern university campus libraries face severe peak-hour congestion, acoustic friction, and territorial seat-reservation behaviors ("bag sprawling"). During our fieldwork at **Lovely Professional University (LPU)**, particularly following the 5:00 PM lecture dispersal, students frequently walk 15–20 minutes from residential hostels (e.g., BH-4, GH-1) only to find study tables occupied by unattended water bottles, jackets, and notebooks.
 
-**QuietSpot v2.0** ("A Seat to Study") is a student-centered digital-physical service system that solves this challenge through:
+**QuietSpot** ("A Seat to Study") is a student-centered digital-physical service system that solves this challenge through:
 1. **Pre-Arrival 15-Minute Walk Holds**: Lock in an open quiet seat before leaving class or hostel.
 2. **Optical Desk QR Arrival Check-In**: Establish a verified single-occupant "Digital Desk Boundary" to eliminate bag reservation.
 3. **20-Minute Break Holds**: Fair-use seat protection for water and stretch breaks that auto-releases if unreturned.
@@ -28,14 +28,14 @@ Our team executed the 5-stage Design Thinking methodology directly on the LPU ca
 
 ```
 [ EMPATHIZE ] ──> [ DEFINE ] ──> [ IDEATE ] ──> [ PROTOTYPE ] ──> [ TEST (CP6) ]
-  6 Student        Point-of-View    "Map & Hold"   v1.0 Static      v2.0 Usability
-  Interviews       Statements &     System & QR    Web App          Audit & 4 Core
-  & 2 Field Visits Personas         Verification                    Fixes (ISS 01-04)
+  6 Student        Point-of-View    "Map & Hold"   Interactive      Usability Audit
+  Interviews       Statements &     System & QR    Web App          & 4 Core Fixes
+  & 2 Field Visits Personas         Verification                    (ISS 01 to 04)
 ```
 
 ### Primary Fieldwork & Student Interviews
 - **Interview #1 (B.Tech CSE, 3rd Year):** *"By 5:15 PM, 5th floor silent tables are completely covered with unattended notebooks. If you move someone's bottle to sit down, an argument breaks out."*
-- **Interview #2 (MBA, 2nd Year):** *"Our project groups need to discuss cases, but the 3 Discussion Rooms are black boxes—you only know if one is free by physically climbing stairs to check."*
+- **Interview #2 (MBA, 2nd Year):** *"Our project groups need to discuss cases, but the 3 Discussion Rooms are black boxes: you only know if one is free by physically climbing stairs to check."*
 - **Interview #3 (B.Des, 4th Year):** *"I need a wall power socket because rendering drains my laptop battery in 45 minutes. Searching for open sockets wastes half my study break."*
 - **Interview #4 (Law Student):** *"Students take Zoom calls inside solo study cabins. Asking them to stop leads to hostility, and library guards aren't always stationed on every aisle."*
 - **Interview #5 & #6 (Hostel Residents):** Emphasized the walk time barrier (15 minutes from hostel blocks across campus) and fear of disciplinary repercussions if their student ID was attached to noise complaints.
@@ -55,15 +55,15 @@ Our team executed the 5-stage Design Thinking methodology directly on the LPU ca
 
 ---
 
-## 4. CP6 v2.0 Usability Audit & Key Fixes
+## 4. CP6 Usability Audit & Key Fixes
 
-During our Phase CP6 user evaluation sessions with LPU students, 4 key friction points were discovered and engineered out in QuietSpot v2.0:
+During our Phase CP6 user evaluation sessions with LPU students, 4 key friction points were discovered and engineered out in QuietSpot:
 
 ```
 ┌─────────┬──────────────────────────────────┬─────────────────────────────────────────────────────────────┐
-│ Fix ID  │ User Friction Identified         │ Engineered v2.0 Solution                                    │
+│ Fix ID  │ User Friction Identified         │ Engineered Solution                                         │
 ├─────────┼──────────────────────────────────┼─────────────────────────────────────────────────────────────┤
-│ ISS-01  │ Students tapped floor headers    │ Added high-contrast primary "Hold Best Quiet Seat — 15 Min" │
+│ ISS-01  │ Students tapped floor headers    │ Added high-contrast primary "Hold Best Quiet Seat (15 Min)" │
 │         │ expecting to hold a seat.        │ CTA buttons directly on every floor card header.            │
 ├─────────┼──────────────────────────────────┼─────────────────────────────────────────────────────────────┤
 │ ISS-02  │ Arrival QR check-in was buried   │ Elevated "Scan Desk QR" into a persistent top nav pill +    │
@@ -94,7 +94,7 @@ During our Phase CP6 user evaluation sessions with LPU students, 4 key friction 
 - **Clean Check-Out Modal**: 3-point cleanliness hand-off (table clear, no trash/bottles left, chair pushed in).
 
 ### Tab 3: Quiet Alert (Anonymous Decorum & Acoustic Tools)
-- **Mandatory Trust Banner**: "100% Anonymous — Zero Student Credentials Collected" (ISS-04).
+- **Mandatory Trust Banner**: "100% Anonymous: Zero Student Credentials Collected" (ISS-04).
 - **One-Tap Disruption Categories**:
   1. *Loud Talking in Silent Zone* (prompts rerouting to open Discussion Rooms)
   2. *Table / Bag Encroachment* (bag-sprawling deterrence)
@@ -124,11 +124,11 @@ During our Phase CP6 user evaluation sessions with LPU students, 4 key friction 
 
 | Campus Zone | Noise Level | Type | Key Features |
 | :--- | :--- | :--- | :--- |
-| **Central Library — 5th Floor** | 34 dB (Whisper Silent) | Silent | 12 Desks (5F-A01 to 5F-C04), Corner Solo `5F-B04` ⚡, Strict Quiet Policy |
-| **Central Library — 4th Floor** | 38 dB (Library Calm) | Silent | 12 Desks (4F-A01 to 4F-B06), Reference Stacks, Natural Daylight |
-| **Central Library — 2nd Floor** | 42 dB (Gentle Murmur) | Solo Cabins | 8 Private Cabins (2F-CAB01 to 2F-CAB08), Thesis Drafting, Power Outlets |
-| **Central Library — Discussion Rooms** | 54 dB (Collaborative) | Group Zone | Discussion Rooms DR-01 (Open), DR-02 (Occupied), DR-03 (Open), Basement Hall |
-| **Academic Block 34 — Study Corners** | 46 dB (Gentle Murmur) | Overflow | 6 Desks/Alcoves (34-ALC01 to 34-ALC06), 2-min walk from lectures (prevents staircase study) |
+| **Central Library: 5th Floor** | 34 dB (Whisper Silent) | Silent | 12 Desks (5F-A01 to 5F-C04), Corner Solo `5F-B04` ⚡, Strict Quiet Policy |
+| **Central Library: 4th Floor** | 38 dB (Library Calm) | Silent | 12 Desks (4F-A01 to 4F-B06), Reference Stacks, Natural Daylight |
+| **Central Library: 2nd Floor** | 42 dB (Gentle Murmur) | Solo Cabins | 8 Private Cabins (2F-CAB01 to 2F-CAB08), Thesis Drafting, Power Outlets |
+| **Central Library: Discussion Rooms** | 54 dB (Collaborative) | Group Zone | Discussion Rooms DR-01 (Open), DR-02 (Occupied), DR-03 (Open), Basement Hall |
+| **Academic Block 34: Study Corners** | 46 dB (Gentle Murmur) | Overflow | 6 Desks/Alcoves (34-ALC01 to 34-ALC06), 2-min walk from lectures (prevents staircase study) |
 
 ---
 
@@ -174,7 +174,7 @@ Then navigate to `http://localhost:8000`.
 
 **Lovely Professional University (LPU)**  
 *School of Computer Science and Engineering / Department of Design Thinking*  
-**Course Code:** K3P26HK &middot; **Project:** P06 — "A Seat to Study"  
+**Course Code:** K3P26HK &middot; **Project:** P06: "A Seat to Study"  
 
 **Team G6:**
 - **Johan Samuel Reji**

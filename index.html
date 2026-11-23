@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- MANDATORY: Declare support for both light and dark themes to prevent FOUC -->
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="QuietSpot v2.0 (P06 — A Seat to Study) — Lovely Professional University Central Library & Academic Block quiet study space locator, 15-min walk-hold, QR check-in, and anonymous decorum reporting.">
+  <meta name="description" content="QuietSpot (P06: A Seat to Study) : Lovely Professional University Central Library & Academic Block quiet study space locator, 15-min walk-hold, QR check-in, and anonymous decorum reporting.">
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a">
 
-  <title>QuietSpot v2.0 · P06: A Seat to Study (LPU)</title>
+  <title>QuietSpot · P06: A Seat to Study (LPU)</title>
   
   <link rel="stylesheet" href="styles.css">
   <script defer src="app.js"></script>
@@ -20,7 +20,7 @@
     <div class="status-strip-container">
       <div class="status-badge-group">
         <span class="live-pulse-dot" aria-hidden="true"></span>
-        <span class="status-text-primary">QuietSpot v2.0 MVP &middot; Simulated Live Campus Telemetry</span>
+        <span class="status-text-primary">QuietSpot MVP &middot; Simulated Live Campus Telemetry</span>
       </div>
       <div class="institutional-badge">
         <span>LPU Central Library &amp; Block 34 &middot; Team G6 (K3P26HK)</span>
@@ -40,7 +40,7 @@
             <path d="M11 26H21" stroke="#16A34A" stroke-width="2" stroke-linecap="round" />
           </svg>
           <div class="brand-titles">
-            <span class="brand-name">QuietSpot <span class="version-tag">v2.0</span></span>
+            <span class="brand-name">QuietSpot</span>
             <span class="brand-sub">P06 &middot; A Seat to Study</span>
           </div>
         </a>
@@ -194,7 +194,7 @@
         </div>
       </div>
 
-      <!-- Search & Filter Controls (Includes CP6 v2.0 Fix ISS-03) -->
+      <!-- Search & Filter Controls (Includes CP6 Fix ISS-03) -->
       <div class="controls-toolbar" role="search" aria-label="Filter campus study zones">
         <div class="search-field-wrapper">
           <svg class="search-svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -210,7 +210,7 @@
           <button type="button" id="clearZoneSearchBtn" class="clear-input-btn" aria-label="Clear search" hidden>&times;</button>
         </div>
 
-        <!-- Filter Chips with CP6 v2.0 Fix ISS-03 (Power Outlets Filter) -->
+        <!-- Filter Chips with CP6 Fix ISS-03 (Power Outlets Filter) -->
         <div class="filter-chips-row">
           <button type="button" class="filter-chip active" data-filter="all">All Zones</button>
           <button type="button" class="filter-chip" data-filter="silent">Strictly Silent (&lt; 40 dB)</button>
@@ -239,12 +239,12 @@
     </section>
 
     <!-- ===================================================================
-         TAB 2: SCAN DESK QR (CP6 v2.0 Fix ISS-02 - Dedicated Arrival Tab)
+         TAB 2: SCAN DESK QR (CP6 Fix ISS-02 : Dedicated Arrival Tab)
          =================================================================== -->
     <section id="scan-view" class="tab-pane" aria-labelledby="scanViewTitle">
       <div class="view-header">
         <div class="view-title-group">
-          <span class="kicker-tag text-blue">Arrival Verification &middot; CP6 v2.0 Fix ISS-02</span>
+          <span class="kicker-tag text-blue">Arrival Verification &middot; CP6 Fix ISS-02</span>
           <h1 id="scanViewTitle" class="page-title">Scan Desk QR Check-In</h1>
           <p class="page-desc">
             Verify your physical arrival at the library desk. Scanning establishes a digital desk boundary to deter bag-sprawling and claims your seat.
@@ -396,12 +396,12 @@
     </section>
 
     <!-- ===================================================================
-         TAB 3: QUIET ALERT (CP6 v2.0 Fix ISS-04 - 100% Anonymous Decorum Reporting)
+         TAB 3: QUIET ALERT (CP6 Fix ISS-04 : 100% Anonymous Decorum Reporting)
          =================================================================== -->
     <section id="alert-view" class="tab-pane" aria-labelledby="alertViewTitle">
       <div class="view-header">
         <div class="view-title-group">
-          <span class="kicker-tag text-emerald">Non-Confrontational Decorum &middot; CP6 v2.0 Fix ISS-04</span>
+          <span class="kicker-tag text-emerald">Non-Confrontational Decorum &middot; CP6 Fix ISS-04</span>
           <h1 id="alertViewTitle" class="page-title">Quiet Alert &middot; Anonymous Decorum</h1>
           <p class="page-desc">
             Report loud disruptions, persistent phone calls, or bag-sprawling silently to the floor supervisor without face-to-face conflict.
@@ -438,9 +438,9 @@
             <div class="form-group">
               <label for="alertFloorSelect">Disruption Location / Floor <span class="req">*</span></label>
               <select id="alertFloorSelect" class="clean-select" required>
-                <option value="5th Floor — Deep Focus">Central Library &middot; 5th Floor (Deep Focus Silent)</option>
-                <option value="4th Floor — Reading Wing">Central Library &middot; 4th Floor (Reading Wing)</option>
-                <option value="2nd Floor — Study Cabins">Central Library &middot; 2nd Floor (Study Cabins)</option>
+                <option value="5th Floor: Deep Focus">Central Library &middot; 5th Floor (Deep Focus Silent)</option>
+                <option value="4th Floor: Reading Wing">Central Library &middot; 4th Floor (Reading Wing)</option>
+                <option value="2nd Floor: Study Cabins">Central Library &middot; 2nd Floor (Study Cabins)</option>
                 <option value="Discussion Rooms Area">Central Library &middot; Discussion Rooms Corridor</option>
                 <option value="Block 34 Study Alcoves">Academic Block 34 &middot; Study Corners</option>
               </select>
@@ -802,13 +802,13 @@
         </div>
       </div>
 
-      <!-- Collapsible Design Thinking Evidence & v2.0 Changelog Panel (For Evaluators/Viva) -->
+      <!-- Collapsible Design Thinking Evidence & Changelog Panel (For Evaluators/Viva) -->
       <div class="evaluator-accordion-card">
         <details class="evaluator-details" id="evaluatorDetails">
           <summary class="evaluator-summary">
             <div class="summary-left">
               <span class="summary-tag">Evaluator &amp; Viva Inspector</span>
-              <strong class="summary-title">Design Thinking Research Traceability &amp; CP6 v2.0 Usability Changelog</strong>
+              <strong class="summary-title">Design Thinking Research Traceability &amp; CP6 Usability Changelog</strong>
             </div>
             <span class="summary-chevron" aria-hidden="true">▼</span>
           </summary>
@@ -817,11 +817,11 @@
             <div class="evidence-grid">
               <!-- Usability Fixes Box -->
               <div class="evidence-col">
-                <h4 class="col-heading text-emerald">CP6 v2.0 Usability Audit &amp; Fixes</h4>
+                <h4 class="col-heading text-emerald">CP6 Usability Audit &amp; Fixes</h4>
                 <ul class="fix-list">
                   <li>
                     <strong>ISS-01 (Floor Card Hold CTA):</strong>
-                    <span>Students in user tests tapped floor headers expecting to reserve. Added high-contrast primary <em>"Hold Best Quiet Seat — 15 Min"</em> buttons directly on every floor card.</span>
+                    <span>Students in user tests tapped floor headers expecting to reserve. Added high-contrast primary <em>"Hold Best Quiet Seat (15 Min)"</em> buttons directly on every floor card.</span>
                   </li>
                   <li>
                     <strong>ISS-02 (Scan Desk QR Discoverability):</strong>
@@ -844,15 +844,15 @@
                 <div class="interview-callouts">
                   <div class="quote-card">
                     <em>"I walked all the way from Boys Hostel 4 to 5th floor only to find every single desk occupied with water bottles and empty notebooks."</em>
-                    <span class="quote-cite">— Interview #2 (3rd Year B.Tech Student, Central Library)</span>
+                    <span class="quote-cite">Interview #2 (3rd Year B.Tech Student, Central Library)</span>
                   </div>
                   <div class="quote-card">
                     <em>"Group study rooms are either locked or full, so groups sit in silent zones and whisper. Telling them to be quiet is awkward."</em>
-                    <span class="quote-cite">— Interview #5 (2nd Year MBA Student, Reading Wing)</span>
+                    <span class="quote-cite">Interview #5 (2nd Year MBA Student, Reading Wing)</span>
                   </div>
                   <div class="quote-card">
                     <em>"During midterms, students sit on Block 34 staircases because nobody knows which rooms on other floors are empty."</em>
-                    <span class="quote-cite">— Field Observation #1 (Academic Block 34, 4:45 PM)</span>
+                    <span class="quote-cite">Field Observation #1 (Academic Block 34, 4:45 PM)</span>
                   </div>
                 </div>
               </div>
@@ -1005,8 +1005,8 @@
     <div class="footer-inner">
       <div class="footer-meta-block">
         <div class="footer-brand">
-          <span class="footer-brand-title">QuietSpot v2.0</span>
-          <span class="footer-brand-subtitle">&mdash; P06: A Seat to Study</span>
+          <span class="footer-brand-title">QuietSpot</span>
+          <span class="footer-brand-subtitle">: P06: A Seat to Study</span>
         </div>
         <p class="footer-context">
           Lovely Professional University (LPU) &middot; Design Thinking &amp; Innovation Project &middot; Central Library &amp; Academic Block 34 Case Study.
